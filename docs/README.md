@@ -6,6 +6,7 @@
 - [実現可能性と技術設計](feasibility-and-design.md)：技術方針、制約、検証計画。
 - [開発・コミット方針](development-workflow.md)：実装時の変更単位とコミット方法。
 - [バージョン・リリース方針](versioning-and-release.md)：開発版の番号更新とリリース版のmaster向けPR手順。
+- [ローカルモデル調査](local-model-inspection.md)：入力モデルの概要とPoC検証候補。
 
 ユーザーの明示要件と、設計上の提案・未検証事項を区別してください。要件や方針が変わった場合は、該当文書を更新してください。
 
