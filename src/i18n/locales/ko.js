@@ -104,6 +104,7 @@ export default {
   newFile: '다른 파일 변환',
   'viewer.label': '변환된 3D 모델',
   'expressions.title': '표정 확인',
+  'preview.extendedButton': '한계돌파',
   'preview.extended': '범위 확장',
   'preview.extendedHint':
     '범위 확장: 보너스 기능. −100~200%. 변형이 깨질 수 있습니다. 저장할 VRM에는 반영되지 않습니다.',

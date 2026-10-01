@@ -105,6 +105,7 @@ export default {
   newFile: 'Convert another file',
   'viewer.label': 'Converted 3D model',
   'expressions.title': 'Check expressions',
+  'preview.extendedButton': 'BOOST',
   'preview.extended': 'Extended range',
   'preview.extendedHint':
     'Extended range: Bonus feature. −100–200%. Deformations may break. Saved VRM is unchanged.',

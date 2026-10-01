@@ -110,8 +110,8 @@ export async function createPreview(buffer, container, sliders, reset, isCurrent
     toggle.setAttribute('aria-labelledby', `expression-${name} extended-${name}`);
     const toggleText = document.createElement('span');
     toggleText.id = `extended-${name}`;
-    toggleText.dataset.i18n = 'preview.extended';
-    toggleText.textContent = translate(document.documentElement.lang, 'preview.extended');
+    toggleText.dataset.i18n = 'preview.extendedButton';
+    toggleText.textContent = translate(document.documentElement.lang, 'preview.extendedButton');
     toggle.dataset.i18nTitle = 'preview.extendedHint';
     toggle.title = translate(document.documentElement.lang, 'preview.extendedHint');
     toggle.append(toggleText);

@@ -101,6 +101,7 @@ export default {
   newFile: '別のファイルを変換',
   'viewer.label': '変換後の3Dモデル',
   'expressions.title': '表情を確認',
+  'preview.extendedButton': '限界突破',
   'preview.extended': '限界突破',
   'preview.extendedHint':
     '限界突破：おまけ機能。−100〜200%。変形が大きく崩れる場合があります。保存するVRMには反映されません。',

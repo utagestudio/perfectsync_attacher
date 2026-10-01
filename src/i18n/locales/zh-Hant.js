@@ -100,6 +100,7 @@ export default {
   newFile: '轉換其他檔案',
   'viewer.label': '轉換後的 3D 模型',
   'expressions.title': '確認表情',
+  'preview.extendedButton': '突破限制',
   'preview.extended': '突破限制',
   'preview.extendedHint': '突破限制：附加功能。−100～200%。變形可能失真，不會影響儲存的 VRM。',
   'preview.extendedNote': '：附加功能。−100～200%。變形可能失真，不會影響儲存的 VRM。',

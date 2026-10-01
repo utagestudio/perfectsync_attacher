@@ -33,9 +33,20 @@ test('extended preview preserves downloads, clamps on disable and resets all tog
   await expect(row.locator('output')).toHaveText('200%');
   await page.screenshot({ path: '_local/extended-positive.png' });
   await page.locator('#language').selectOption('en');
-  await expect(row.locator('.extended-toggle span')).toHaveText('Extended range');
+  await expect(row.locator('.extended-toggle span')).toHaveText('BOOST');
   await expect(toggle).toHaveAttribute('aria-pressed', 'true');
   await expect(range).toHaveValue('2');
+  for (const language of ['ja', 'en', 'ko', 'zh-Hant', 'zh-Hans']) {
+    await page.locator('#language').selectOption(language);
+    await toggle.scrollIntoViewIfNeeded();
+    expect(
+      await toggle.evaluate(
+        (button) =>
+          button.scrollWidth <= button.clientWidth && button.scrollHeight <= button.clientHeight,
+      ),
+    ).toBe(true);
+    await row.screenshot({ path: `_local/extended-button-${language}.png` });
+  }
   await toggle.click();
   await expect(range).toHaveValue('1');
   await toggle.click();
