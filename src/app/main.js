@@ -3,7 +3,7 @@ import { version } from '../../package.json';
 const $ = (id) => document.getElementById(id);
 $('version').textContent = version;
 function showScreen(name) {
-  for (const id of ['waiting', 'result', 'preview']) $(id).hidden = id !== name;
+  for (const id of ['waiting', 'result']) $(id).hidden = id !== name;
   for (const stage of document.querySelectorAll('[data-stage]')) {
     if (stage.dataset.stage === name) stage.setAttribute('aria-current', 'step');
     else stage.removeAttribute('aria-current');
@@ -20,8 +20,8 @@ function clearPreview() {
   previewCleanup?.();
   previewCleanup = undefined;
   previewLoading = false;
-  $('preview-button').disabled = false;
-  $('preview').hidden = true;
+  $('preview-retry').hidden = true;
+  $('reset').disabled = true;
   $('sliders').replaceChildren();
   $('viewer').replaceChildren();
 }
@@ -83,7 +83,9 @@ async function start(file) {
           `VRM ${data.version} · ${(output.byteLength / 1024 / 1024).toFixed(1)} MiB · 元のファイルは保持されています`;
         $('warnings').textContent = data.warnings.join('\n');
         showScreen('result');
-        $('status').textContent = '保存するか、表情をプレビューしてください。';
+        $('status').textContent = '表情を確認し、VRMを保存できます。';
+        $('result').querySelector('details').open = false;
+        openPreview();
       }
     };
     worker.onerror = () => {
@@ -131,15 +133,11 @@ $('cancel').addEventListener('click', () => {
   $('drop').hidden = false;
   $('status').textContent = '変換をキャンセルしました。ファイルを選び直せます。';
 });
-$('preview-button').addEventListener('click', async () => {
-  if (!output) return;
-  showScreen('preview');
-  $('status').textContent = 'ファイルは端末内で処理されています。';
-  if (previewLoading || previewCleanup) return;
+async function openPreview() {
+  if (!output || previewLoading || previewCleanup) return;
   previewLoading = true;
   const ticket = sequence;
-  $('preview-button').disabled = true;
-  showScreen('preview');
+  $('preview-retry').hidden = true;
   $('preview-status').textContent = 'プレビューを準備しています…';
   try {
     const { createPreview } = await import('../preview/viewer.js');
@@ -156,24 +154,20 @@ $('preview-button').addEventListener('click', async () => {
       return;
     }
     previewCleanup = cleanup;
-    $('preview-button').disabled = false;
-    $('preview-status').textContent =
-      'スライダーで表情を混ぜて確認できます。ドラッグで回転、ホイールで拡大。';
+    $('reset').disabled = false;
+    $('preview-status').textContent = 'スライダーで表情を調整。ドラッグで回転、ホイールで拡大。';
   } catch (e) {
     if (ticket === sequence) {
       $('preview-status').textContent =
         `プレビューを開けませんでした：${e.message}。VRMの保存は可能です。`;
-      $('preview-button').disabled = false;
+      $('preview-retry').hidden = false;
     }
   } finally {
     if (ticket === sequence) previewLoading = false;
   }
-});
+}
+$('preview-retry').addEventListener('click', openPreview);
 
-$('back-result').addEventListener('click', () => {
-  showScreen('result');
-  $('status').textContent = '保存するか、表情をプレビューしてください。';
-});
 $('new-file').addEventListener('click', () => {
   start();
   $('status').textContent = 'ファイルは外部へ送信されません。';

@@ -13,7 +13,13 @@ export async function createPreview(buffer, container, sliders, reset, isCurrent
     return () => {};
   }
   VRMUtils.rotateVRM0(vrm);
-  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  let renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  } catch (error) {
+    VRMUtils.deepDispose(vrm.scene);
+    throw error;
+  }
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   const scene = new THREE.Scene();

@@ -9,6 +9,7 @@ for (const file of ['02_utage3.4.0-vrm0.0.vrm', '02_utage3.4vrm1.0.vrm'])
     page.on('request', (r) => requests.push({ url: r.url(), method: r.method() }));
     await page.goto('/');
     await page.locator('#file').setInputFiles('_local/vrm/' + file);
+    await expect(page.locator('#result')).toBeVisible();
     await expect(page.locator('#result-title')).toHaveText('52表情を追加しました');
     const downloadPromise = page.waitForEvent('download');
     await page.locator('#download').click();
@@ -16,7 +17,6 @@ for (const file of ['02_utage3.4.0-vrm0.0.vrm', '02_utage3.4vrm1.0.vrm'])
     const bytes = await readFile(await download.path());
     const out = parseGlb(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength));
     expect(out.json.meshes[0].extras.targetNames).toHaveLength(109);
-    await page.locator('#preview-button').click();
     await expect(page.locator('#sliders input')).toHaveCount(52);
     await expect(page.locator('#viewer canvas')).toBeVisible();
     await page.locator('input[aria-label="JawOpen"]').fill('0.7');
@@ -96,24 +96,21 @@ for (const viewport of [
     await page.locator('#file').setInputFiles('_local/vrm/woman1.vrm');
     await expect(page.locator('#result')).toBeVisible();
     await expect(page.locator('#waiting')).toBeHidden();
-    await expect(page.locator('#preview')).toBeHidden();
     await fits();
-    await page.locator('#preview-button').click();
     await expect(page.locator('#sliders input')).toHaveCount(52);
-    await expect(page.locator('#result')).toBeHidden();
+    await expect(page.locator('#result')).toBeVisible();
+    await expect(page.locator('#download')).toBeVisible();
+    await expect(page.locator('#new-file')).toBeVisible();
     await expect(page.locator('#viewer canvas')).toBeVisible();
     await fits();
     await page.locator('input[aria-label="JawOpen"]').fill('0.7');
     await page.screenshot({
       path: `_local/staged-preview-${viewport.width}x${viewport.height}.png`,
     });
-    await page.locator('#back-result').click();
-    await expect(page.locator('#result')).toBeVisible();
-    await expect(page.locator('#preview')).toBeHidden();
-    await page.locator('#preview-button').click();
+    await page.locator('.result-notes summary').click();
+    await expect(page.locator('#warnings')).toBeVisible();
+    await fits();
     await expect(page.locator('input[aria-label="JawOpen"]')).toHaveValue('0.7');
-    await expect(page.locator('#sliders input')).toHaveCount(52);
-    await page.locator('#back-result').click();
     await page.locator('#new-file').click();
     await expect(page.locator('#waiting')).toBeVisible();
     await expect(page.locator('#result')).toBeHidden();
@@ -143,4 +140,43 @@ test('processing is a single screen and can be cancelled', async ({ page }) => {
   release();
   await expect(page.locator('#drop')).toBeVisible();
   await expect(page.locator('#status')).toContainText('キャンセル');
+});
+
+test('VRM can be saved when automatic preview fails', async ({ page }) => {
+  await page.addInitScript(() => {
+    const original = HTMLCanvasElement.prototype.getContext;
+    HTMLCanvasElement.prototype.getContext = function (type, ...args) {
+      if (type.startsWith('webgl')) return null;
+      return original.call(this, type, ...args);
+    };
+  });
+  await page.goto('/');
+  await page.locator('#file').setInputFiles('_local/vrm/woman1.vrm');
+  await expect(page.locator('#preview-status')).toContainText('プレビューを開けませんでした');
+  await expect(page.locator('#preview-retry')).toBeVisible();
+  await expect(page.locator('#reset')).toBeDisabled();
+  const pending = page.waitForEvent('download');
+  await page.locator('#download').click();
+  expect((await pending).suggestedFilename()).toBe('woman1_perfectsync.vrm');
+  await page.locator('#new-file').click();
+  await expect(page.locator('#waiting')).toBeVisible();
+});
+
+test('new file clears preview while it is still loading', async ({ page }) => {
+  let release;
+  const gate = new Promise((resolve) => {
+    release = resolve;
+  });
+  await page.route('**/src/preview/viewer.js*', async (route) => {
+    await gate;
+    await route.continue();
+  });
+  await page.goto('/');
+  await page.locator('#file').setInputFiles('_local/vrm/woman1.vrm');
+  await expect(page.locator('#result')).toBeVisible();
+  await page.locator('#new-file').click();
+  release();
+  await expect(page.locator('#waiting')).toBeVisible();
+  await expect(page.locator('#sliders input')).toHaveCount(0);
+  await expect(page.locator('#viewer canvas')).toHaveCount(0);
 });
