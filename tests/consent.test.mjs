@@ -62,6 +62,7 @@ test('only the requested GTM container key is accepted; Google CSP sources are c
   for (const id of ['G-ABC123', 'GTM-<script>', 'GTM-ABC&x=1'])
     assert.throws(() => containerId(id));
   assert.ok(!analyticsHeaders('').includes('googletagmanager'));
+  assert.ok(analyticsHeaders('').includes("connect-src 'self' blob:"));
   const enabled = analyticsHeaders('GTM-ABC123');
   assert.ok(enabled.includes('https://www.googletagmanager.com'));
   assert.ok(enabled.includes("frame-src 'self'"));
