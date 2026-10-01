@@ -110,3 +110,41 @@ test('partial pre-existing expressions do not get overwritten', () => {
   g.json.extensions.VRMC_vrm.expressions.custom = { JawOpen: {} };
   assert.throws(() => convert(writeGlb(g.json, g.bin), template), /衝突/);
 });
+
+test('hostile accessor sizes, fractional offsets and external references are rejected', () => {
+  for (const mutate of [
+    (g) => {
+      g.json.accessors[0].count = 10000000;
+    },
+    (g) => {
+      g.json.accessors[0].type = '__proto__';
+    },
+    (g) => {
+      g.json.accessors[0].byteOffset = 0.5;
+    },
+    (g) => {
+      g.json.accessors[0].sparse = { count: 1 };
+    },
+    (g) => {
+      g.json.bufferViews[0].byteOffset = 0.5;
+    },
+    (g) => {
+      g.json.buffers[0].byteLength = -1;
+    },
+    (g) => {
+      g.json.images = [{ uri: 'https://example.com/private' }];
+    },
+    (g) => {
+      g.json.buffers[0].uri = 'https://example.com/private';
+    },
+  ]) {
+    const g = parseGlb(template);
+    mutate(g);
+    assert.throws(() => parseGlb(writeGlb(g.json, g.bin)));
+  }
+  for (const value of [NaN, 0.5, '4', -1]) {
+    const g = parseGlb(template);
+    g.json.accessors[0].byteOffset = value;
+    assert.throws(() => readAccessor(g, 0));
+  }
+});

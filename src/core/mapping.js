@@ -10,6 +10,24 @@ export function materialRole(name = '') {
 }
 export function primitiveGeometry(glb, p) {
   if (p.mode !== undefined && p.mode !== 4) throw new Error('三角形以外の顔メッシュは未対応です。');
+  if (
+    glb.json.accessors?.[p.attributes?.POSITION]?.count > 50000 ||
+    glb.json.accessors?.[p.indices]?.count > 300000
+  )
+    throw new Error('顔メッシュが処理上限を超えています。');
+  const positionAccessor = glb.json.accessors?.[p.attributes?.POSITION];
+  const uvAccessor = glb.json.accessors?.[p.attributes?.TEXCOORD_0];
+  const indexAccessor = glb.json.accessors?.[p.indices];
+  if (
+    positionAccessor?.type !== 'VEC3' ||
+    positionAccessor.componentType !== 5126 ||
+    uvAccessor?.type !== 'VEC2' ||
+    (p.indices !== undefined &&
+      (indexAccessor?.type !== 'SCALAR' ||
+        indexAccessor.normalized ||
+        ![5121, 5123, 5125].includes(indexAccessor.componentType)))
+  )
+    throw new Error('顔メッシュのaccessor形式が不正です。');
   const position = readAccessor(glb, p.attributes.POSITION),
     uv = readAccessor(glb, p.attributes.TEXCOORD_0);
   if (position.length / 3 !== uv.length / 2) throw new Error('UVと頂点数が一致しません。');

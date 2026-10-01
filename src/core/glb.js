@@ -1,4 +1,10 @@
+export const MAX_INPUT_BYTES = 100 * 1024 * 1024;
+const MAX_JSON_BYTES = 16 * 1024 * 1024;
+const MAX_ACCESSOR_VALUES = 8 * 1024 * 1024;
+const integer = (v) => Number.isSafeInteger(v) && v >= 0;
 export function parseGlb(buffer) {
+  if (buffer.byteLength > MAX_INPUT_BYTES)
+    throw new Error('100 MiB以下のファイルを選択してください。');
   const bytes = new Uint8Array(buffer);
   const view = new DataView(buffer);
   if (
@@ -19,6 +25,7 @@ export function parseGlb(buffer) {
     const chunk = bytes.subarray(offset + 8, offset + 8 + length);
     if (type === 0x4e4f534a) {
       if (json) throw new Error('JSONチャンクが重複しています。');
+      if (length > MAX_JSON_BYTES) throw new Error('GLBのJSONが大きすぎます。');
       json = JSON.parse(new TextDecoder().decode(chunk));
     } else if (type === 0x004e4942) {
       if (bin) throw new Error('BINチャンクが重複しています。');
@@ -28,9 +35,79 @@ export function parseGlb(buffer) {
   }
   if (!json || !bin || json.asset?.version !== '2.0')
     throw new Error('JSONまたはBINがありません。');
-  if (json.buffers?.length !== 1 || json.buffers[0].uri || json.buffers[0].byteLength > bin.length)
+  if (
+    json.buffers?.length !== 1 ||
+    json.buffers[0].uri !== undefined ||
+    !integer(json.buffers[0].byteLength) ||
+    json.buffers[0].byteLength > bin.length
+  )
     throw new Error('外部バッファまたは複数バッファは未対応です。');
   if (json.images?.some((x) => x.uri)) throw new Error('外部画像参照は未対応です。');
+  for (const b of json.bufferViews ?? []) {
+    if (
+      b.buffer !== 0 ||
+      !integer(b.byteOffset ?? 0) ||
+      !integer(b.byteLength) ||
+      (b.byteOffset ?? 0) + b.byteLength > json.buffers[0].byteLength
+    )
+      throw new Error('bufferViewがバッファ範囲外です。');
+  }
+  let totalValues = 0;
+  const dimensions = { ...components, MAT2: 4, MAT3: 9, MAT4: 16 };
+  for (const a of json.accessors ?? []) {
+    if (
+      !integer(a.count) ||
+      !Object.hasOwn(dimensions, a.type) ||
+      !Object.hasOwn(formats, a.componentType)
+    )
+      throw new Error('未対応または不正なaccessorです。');
+    const width = dimensions[a.type],
+      size = formats[a.componentType][1];
+    const matrixColumns = { MAT2: 2, MAT3: 3, MAT4: 4 }[a.type];
+    const elementBytes = matrixColumns
+      ? matrixColumns * Math.ceil((matrixColumns * size) / 4) * 4
+      : width * size;
+    const range = (viewIndex, offset, count, bytes, stride) => {
+      const b = json.bufferViews?.[viewIndex];
+      if (
+        !integer(viewIndex) ||
+        !b ||
+        !integer(offset) ||
+        !integer(stride) ||
+        stride < bytes ||
+        !Number.isSafeInteger(offset + Math.max(0, count - 1) * stride + (count ? bytes : 0)) ||
+        offset + Math.max(0, count - 1) * stride + (count ? bytes : 0) > b.byteLength
+      )
+        throw new Error('accessorがバッファ範囲外です。');
+    };
+    if (a.bufferView !== undefined)
+      range(
+        a.bufferView,
+        a.byteOffset ?? 0,
+        a.count,
+        elementBytes,
+        json.bufferViews?.[a.bufferView]?.byteStride ?? elementBytes,
+      );
+    else if (!integer(a.byteOffset ?? 0) || (a.byteOffset ?? 0) !== 0)
+      throw new Error('accessorのオフセットが不正です。');
+    if (a.sparse) {
+      const s = a.sparse;
+      if (
+        !integer(s.count) ||
+        s.count < 1 ||
+        s.count > a.count ||
+        !s.indices ||
+        !s.values ||
+        ![5121, 5123, 5125].includes(s.indices.componentType)
+      )
+        throw new Error('sparse accessorが不正です。');
+      const indexBytes = formats[s.indices.componentType][1];
+      range(s.indices.bufferView, s.indices.byteOffset ?? 0, s.count, indexBytes, indexBytes);
+      range(s.values.bufferView, s.values.byteOffset ?? 0, s.count, elementBytes, elementBytes);
+    }
+    totalValues += a.count * width;
+    if (totalValues > MAX_ACCESSOR_VALUES) throw new Error('頂点・表情データが大きすぎます。');
+  }
   return { json, bin };
 }
 const components = { SCALAR: 1, VEC2: 2, VEC3: 3, VEC4: 4 };
@@ -46,22 +123,29 @@ export function readAccessor(glb, index) {
   const a = glb.json.accessors?.[index];
   if (
     !a ||
-    !components[a.type] ||
-    !formats[a.componentType] ||
+    !Object.hasOwn(components, a.type) ||
+    !Object.hasOwn(formats, a.componentType) ||
     !Number.isSafeInteger(a.count) ||
     a.count < 0 ||
-    a.count > 10000000
+    a.count * components[a.type] > MAX_ACCESSOR_VALUES
   )
     throw new Error('未対応または不正なaccessorです。');
   const width = components[a.type],
     [method, size] = formats[a.componentType];
-  const out = new Float64Array(a.count * width);
+  let out;
   function read(viewIndex, offset, count, stride, write) {
     const b = glb.json.bufferViews?.[viewIndex];
-    if (!b || b.buffer !== 0) throw new Error('bufferViewの参照が不正です。');
+    if (!integer(viewIndex) || !b || b.buffer !== 0)
+      throw new Error('bufferViewの参照が不正です。');
     const start = (b.byteOffset ?? 0) + offset;
     const end = count ? offset + (count - 1) * stride + width * size : offset;
     if (
+      !integer(offset) ||
+      !integer(stride) ||
+      !integer(b.byteOffset ?? 0) ||
+      !integer(b.byteLength) ||
+      !integer(glb.json.buffers[0].byteLength) ||
+      (b.byteOffset ?? 0) + b.byteLength > glb.bin.byteLength ||
       offset < 0 ||
       stride < width * size ||
       end > b.byteLength ||
@@ -69,6 +153,7 @@ export function readAccessor(glb, index) {
       start + (end - offset) > glb.json.buffers[0].byteLength
     )
       throw new Error('accessorがバッファ範囲外です。');
+    if (!out) out = new Float64Array(a.count * width);
     const dv = new DataView(glb.bin.buffer, glb.bin.byteOffset, glb.bin.byteLength);
     for (let i = 0; i < count; i++)
       for (let c = 0; c < width; c++) {
@@ -92,12 +177,15 @@ export function readAccessor(glb, index) {
       glb.json.bufferViews[a.bufferView]?.byteStride ?? width * size,
       (i, c, v) => (out[i * width + c] = v),
     );
+  if (!out) out = new Float64Array(a.count * width);
   if (a.sparse) {
     const s = a.sparse;
     if (
       !Number.isInteger(s.count) ||
       s.count < 1 ||
       s.count > a.count ||
+      !s.indices ||
+      !s.values ||
       ![5121, 5123, 5125].includes(s.indices.componentType)
     )
       throw new Error('sparse accessorが不正です。');

@@ -3,7 +3,12 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
 export async function createPreview(buffer, container, sliders, reset, isCurrent = () => true) {
-  const loader = new GLTFLoader();
+  const manager = new THREE.LoadingManager();
+  manager.setURLModifier((url) => {
+    if (!url.startsWith('blob:')) throw new Error('プレビューの外部参照は許可されていません');
+    return url;
+  });
+  const loader = new GLTFLoader(manager);
   loader.register((parser) => new VRMLoaderPlugin(parser));
   const gltf = await loader.parseAsync(buffer, '');
   const vrm = gltf.userData.vrm;

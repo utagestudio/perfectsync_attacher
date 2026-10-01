@@ -1,4 +1,5 @@
 import './style.css';
+import { MAX_INPUT_BYTES } from '../core/glb.js';
 import { version } from '../../package.json';
 const $ = (id) => document.getElementById(id);
 $('version').textContent = version;
@@ -11,6 +12,7 @@ function showScreen(name) {
   if (name !== 'waiting') $(`${name}-title`).focus({ preventScroll: true });
 }
 let worker,
+  workerTimeout,
   downloadUrl,
   output,
   previewCleanup,
@@ -26,6 +28,8 @@ function clearPreview() {
   $('viewer').replaceChildren();
 }
 function stopWorker() {
+  clearTimeout(workerTimeout);
+  workerTimeout = undefined;
   worker?.terminate();
   worker = undefined;
   $('progress-area').hidden = true;
@@ -47,7 +51,7 @@ async function start(file) {
   if (!file) return;
   if (!file.name.toLowerCase().endsWith('.vrm'))
     return error('拡張子が.vrmのファイルを選択してください。');
-  if (file.size > 100 * 1024 * 1024) return error('100 MiB以下のファイルを選択してください。');
+  if (file.size > MAX_INPUT_BYTES) return error('100 MiB以下のファイルを選択してください。');
   $('filename').textContent = file.name;
   $('progress-area').hidden = false;
   $('drop').hidden = true;
@@ -93,6 +97,11 @@ async function start(file) {
       stopWorker();
       error('処理を継続できませんでした。ファイルを選び直してください。');
     };
+    workerTimeout = setTimeout(() => {
+      if (ticket !== sequence) return;
+      stopWorker();
+      error('処理時間の上限を超えました。ファイルを選び直してください。');
+    }, 120000);
     worker.postMessage({ buffer }, [buffer]);
   } catch (e) {
     if (ticket === sequence) {

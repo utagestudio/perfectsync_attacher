@@ -32,7 +32,7 @@ for (const file of ['02_utage3.4.0-vrm0.0.vrm', '02_utage3.4vrm1.0.vrm'])
     expect(
       requests
         .filter((r) => /^https?:/.test(r.url))
-        .every((r) => r.url.startsWith('http://127.0.0.1:5173/')),
+        .every((r) => r.url.startsWith(new URL(page.url()).origin + '/')),
     ).toBe(true);
   });
 test('unsupported model gives a reason and permits retry', async ({ page }) => {
@@ -179,4 +179,64 @@ test('new file clears preview while it is still loading', async ({ page }) => {
   await expect(page.locator('#waiting')).toBeVisible();
   await expect(page.locator('#sliders input')).toHaveCount(0);
   await expect(page.locator('#viewer canvas')).toHaveCount(0);
+});
+
+test('hostile external images are rejected without making an external request', async ({
+  page,
+}) => {
+  const { writeGlb } = await import('../../src/core/glb.js');
+  const bytes = await readFile('_local/vrm/woman1.vrm');
+  const g = parseGlb(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength));
+  g.json.images.push({ uri: 'https://example.com/should-never-load.png' });
+  const external = [];
+  page.on('request', (r) => {
+    if (r.url().startsWith('https://example.com/')) external.push(r.url());
+  });
+  await page.goto('/');
+  await page.locator('#file').setInputFiles({
+    name: 'external.vrm',
+    mimeType: 'application/octet-stream',
+    buffer: Buffer.from(writeGlb(g.json, g.bin)),
+  });
+  await expect(page.locator('#status')).toContainText('外部画像参照');
+  await expect(page.locator('#result')).toBeHidden();
+  expect(external).toEqual([]);
+});
+
+test('oversized sparse allocations fail before preview and allow retry', async ({ page }) => {
+  const { writeGlb } = await import('../../src/core/glb.js');
+  const bytes = await readFile('_local/vrm/woman1.vrm');
+  const g = parseGlb(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength));
+  g.json.accessors.push({ type: 'VEC3', componentType: 5126, count: 10000000 });
+  await page.goto('/');
+  await page.locator('#file').setInputFiles({
+    name: 'oversized.vrm',
+    mimeType: 'application/octet-stream',
+    buffer: Buffer.from(writeGlb(g.json, g.bin)),
+  });
+  await expect(page.locator('#status')).toContainText('大きすぎ');
+  await expect(page.locator('#result')).toBeHidden();
+  await page.locator('#file').setInputFiles('_local/vrm/woman1.vrm');
+  await expect(page.locator('#result')).toBeVisible();
+});
+
+test('filenames are displayed as text and cannot inject markup', async ({ page }) => {
+  let release;
+  const gate = new Promise((resolve) => {
+    release = resolve;
+  });
+  await page.route('**/templates/hinzka-female.glb', async (route) => {
+    await gate;
+    await route.continue();
+  });
+  await page.goto('/');
+  await page.locator('#file').setInputFiles({
+    name: '<svg onload=alert(1)>.vrm',
+    mimeType: 'application/octet-stream',
+    buffer: await readFile('_local/vrm/woman1.vrm'),
+  });
+  await expect(page.locator('#filename')).toHaveText('<svg onload=alert(1)>.vrm');
+  await expect(page.locator('#filename svg')).toHaveCount(0);
+  await page.locator('#cancel').click();
+  release();
 });

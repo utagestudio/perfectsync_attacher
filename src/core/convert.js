@@ -125,6 +125,7 @@ export function convert(input, templateBuffer, progress = () => {}) {
     fail('既存のPerfect Sync表情があります。上書きを避けるため変換を停止しました。');
   }
   if (present.length) fail('既存のPerfect Sync表情があります。部分的な衝突の修復は未対応です。');
+  if (mesh.primitives.length > 64) fail('顔パーツ数が処理上限を超えています。');
   const targetCount = mesh.primitives[0].targets?.length ?? 0;
   if (
     existingNames.length !== targetCount ||
@@ -172,6 +173,13 @@ export function convert(input, templateBuffer, progress = () => {}) {
     group.parts.push(part.p);
     group.indices.push(...part.geometry.indices);
   }
+  const projectedBytes =
+    glb.bin.length +
+    [...areaGroups.values()].reduce(
+      (sum, group) => sum + group.geometry.position.length * 4 * 2 * 52,
+      0,
+    );
+  if (projectedBytes > 100 * 1024 * 1024) fail('変換後のデータが100 MiBの処理上限を超えます。');
   progress('顔の対応を確認しました', 15);
   const chunks = [glb.bin.subarray(0, json.buffers[0].byteLength)];
   let length = chunks[0].length;
