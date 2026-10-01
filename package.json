@@ -1,6 +1,6 @@
 {
   "name": "perfectsync-attacher",
-  "version": "0.2.0-dev.3",
+  "version": "0.2.0-dev.4",
   "private": true,
   "type": "module",
   "scripts": {
@@ -22,5 +22,6 @@
   "dependencies": {
     "@pixiv/three-vrm": "^3.5.5",
     "three": "^0.186.1"
-  }
+  },
+  "license": "MIT"
 }

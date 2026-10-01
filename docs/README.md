@@ -2,6 +2,7 @@
 
 作業開始時は以下を確認してください。
 
+- [ライセンス方針](licenses.md)：本体のMITライセンス、第三者素材、入力・出力VRMの適用範囲。
 - [コンセプト・ユーザー要件](project-concept.md)：ユーザーの意図と指定事項。
 - [実現可能性と技術設計](feasibility-and-design.md)：技術方針、制約、検証計画。
 - [開発・コミット方針](development-workflow.md)：実装時の変更単位とコミット方法。

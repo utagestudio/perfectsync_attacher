@@ -24,3 +24,7 @@ npm run build          # Cloudflare Pages向けにdist/を生成
 ```
 
 プロジェクトの背景とルールは[docs/README.md](docs/README.md)にあります。
+
+## ライセンス
+
+本体コードは[MITライセンス](LICENSE)です。第三者ライブラリ・変形テンプレートと、入力・出力VRMの扱いは[ライセンス方針](docs/licenses.md)を参照してください。
