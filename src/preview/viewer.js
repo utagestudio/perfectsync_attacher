@@ -1,15 +1,31 @@
+import { AppError } from '../i18n/messages.js';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
-export async function createPreview(buffer, container, sliders, reset) {
-  const loader = new GLTFLoader();
+export async function createPreview(buffer, container, sliders, reset, isCurrent = () => true) {
+  const manager = new THREE.LoadingManager();
+  manager.setURLModifier((url) => {
+    if (!url.startsWith('blob:')) throw new AppError('error.previewExternal');
+    return url;
+  });
+  const loader = new GLTFLoader(manager);
   loader.register((parser) => new VRMLoaderPlugin(parser));
   const gltf = await loader.parseAsync(buffer, '');
   const vrm = gltf.userData.vrm;
-  if (!vrm) throw new Error('VRMを読み込めませんでした');
+  if (!vrm) throw new AppError('error.previewVrm');
+  if (!isCurrent()) {
+    VRMUtils.deepDispose(vrm.scene);
+    return () => {};
+  }
   VRMUtils.rotateVRM0(vrm);
-  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  let renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  } catch (error) {
+    VRMUtils.deepDispose(vrm.scene);
+    throw error;
+  }
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   const scene = new THREE.Scene();
@@ -42,6 +58,7 @@ export async function createPreview(buffer, container, sliders, reset) {
   const observer = new ResizeObserver(() => {
     const w = container.clientWidth,
       h = container.clientHeight;
+    if (!w || !h) return;
     renderer.setSize(w, h);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
@@ -55,7 +72,7 @@ export async function createPreview(buffer, container, sliders, reset) {
     renderer.dispose();
     VRMUtils.deepDispose(vrm.scene);
     observer.disconnect();
-    throw new Error(`表情の読み込み数が${names.length}/52です`);
+    throw new AppError('error.previewCount', { count: names.length });
   }
   const inputs = [];
   for (const name of names) {
@@ -75,6 +92,7 @@ export async function createPreview(buffer, container, sliders, reset) {
     input.addEventListener('input', () => {
       vrm.expressionManager.setValue(name, Number(input.value));
       value.textContent = `${Math.round(input.value * 100)}%`;
+      input.style.setProperty('--range-fill', `${Number(input.value) * 100}%`);
     });
     row.append(caption, value, input);
     sliders.append(row);
@@ -83,12 +101,14 @@ export async function createPreview(buffer, container, sliders, reset) {
   const resetValues = () => {
     for (const { input, value, name } of inputs) {
       input.value = 0;
+      input.style.setProperty('--range-fill', '0%');
       value.textContent = '0%';
       vrm.expressionManager.setValue(name, 0);
     }
   };
   reset.addEventListener('click', resetValues);
   renderer.setAnimationLoop(() => {
+    if (!container.clientWidth || !container.clientHeight) return;
     controls.update();
     vrm.update(0);
     renderer.render(scene, camera);

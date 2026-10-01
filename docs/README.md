@@ -2,13 +2,20 @@
 
 作業開始時は以下を確認してください。
 
+- [公開前チェック](publication-check.md)：コード・履歴・配布物の確認範囲と修正・検証結果。
+- [ライセンス方針](licenses.md)：本体のMITライセンス、第三者素材、入力・出力VRMの適用範囲。
 - [コンセプト・ユーザー要件](project-concept.md)：ユーザーの意図と指定事項。
 - [実現可能性と技術設計](feasibility-and-design.md)：技術方針、制約、検証計画。
 - [開発・コミット方針](development-workflow.md)：実装時の変更単位とコミット方法。
 - [バージョン・リリース方針](versioning-and-release.md)：開発版の番号更新とリリース版のmaster向けPR手順。
+- [アクセス解析・同意管理](analytics-and-consent.md)：GTM_ID・90日保存・撤回とGTM／GA4の設定手順。
+- [README・SEOと公開設定](seo-and-publication.md)：公開ドメイン・言語別ページ・メタ情報とビルド設定。
+- [多言語対応](internationalization.md)：言語の初期判定・保存・翻訳追加と検証範囲。
 - [プロトタイプ確認ガイド](prototype-guide.md)：起動・操作・実装済み範囲と検証結果。
 - [ローカルモデル調査](local-model-inspection.md)：入力モデルの概要とPoC検証候補。
 
 ユーザーの明示要件と、設計上の提案・未検証事項を区別してください。要件や方針が変わった場合は、該当文書を更新してください。
 
 詳細な作業指示や参照情報はdocs/内の適切なファイルで管理し、必要に応じてこのガイドからリンクしてください。AGENTS.mdには最小限の共通指示と、このガイドへの参照だけを置いてください。
+
+Git管理外の作業メモとして、`_local/session-notes.md`が存在する場合は作業開始時に併せて参照してください。その内容を公開文書へ転記しないでください。

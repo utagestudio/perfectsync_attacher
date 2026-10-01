@@ -4,7 +4,8 @@ export default defineConfig({
   workers: 1,
   timeout: 60000,
   use: {
-    baseURL: 'http://127.0.0.1:5173',
+    locale: 'ja-JP',
+    baseURL: 'http://127.0.0.1:5193',
     viewport: { width: 1280, height: 1000 },
     launchOptions: {
       executablePath: process.env.PLAYWRIGHT_CHROME_PATH ?? '/usr/bin/google-chrome',
@@ -12,8 +13,8 @@ export default defineConfig({
     },
   },
   webServer: {
-    command: 'npm run dev -- --port 5173 --strictPort',
-    url: 'http://127.0.0.1:5173',
-    reuseExistingServer: true,
+    command: 'npm run dev -- --port 5193 --strictPort',
+    url: 'http://127.0.0.1:5193',
+    reuseExistingServer: false,
   },
 });

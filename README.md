@@ -1,26 +1,63 @@
 # Perfect Sync Attacher
 
-VRoid製VRMにPerfect Sync用の52表情を追加する、ブラウザー内変換プロトタイプです。
+日本語 | [English](README.en.md)
 
-## 起動
+VRoid Studio製の対応VRMに、Perfect Sync用の52表情を追加するウェブアプリです。Unityの起動は不要。VRMをドラッグ＆ドロップし、表情を確認して保存できます。
 
-Node.js 22.12以上で実行してください。
+リリース版は`0.2.0`です。[公開アプリ](https://perfectsync.utage.games/)はCloudflare Pagesで配信しています。
+
+![日本語の待機画面](docs/images/waiting-ja.png)
+
+## 使い方
+
+1. VRMファイルをドロップするか、「ファイルを選択」から開きます。
+2. 変換後の3Dプレビューで表情を確認します。スライダーで調整し、ドラッグで回転、ホイールで拡大できます。
+3. 「VRMを保存」から、元の名前に`_perfectsync`を付けたファイルを保存します。
+
+元ファイルは変更しません。プレビューのスライダー値は保存するVRMへ焼き込みません。日本語・英語・韓国語・繁体字中国語・簡体字中国語に対応し、ヘッダーから切り替えられます。
+
+## 対応範囲・制約
+
+- VRM 0.x／1.0を扱い、入力と同じ形式で出力します。形式間の変換は行いません。
+- テンプレートと対応するVRoidの顔メッシュが対象です。VRoid製であっても、すべてのモデルに対応するわけではありません。
+- 顔と身体が結合されたモデル、UV・頂点対応や三角形構造が一致しないモデル、外部バッファ・画像参照等には対応しません。
+- 既存のPerfect Sync表情との衝突がある場合は停止します。本ツールで変換済みのファイルは追加せず、そのまま返します。
+- 入力は1ファイルずつ、100 MiBまで。顔メッシュや内部データにも処理上限があります。
+- 顔形状に合わせた簡易補正を用いるため、唇・歯・まぶた・舌の干渉や複合表情の見え方を確認してください。
+
+ローカル検証では10モデル中8モデルを変換でき、対応出力のglTF検証エラーは0件でした。WebcamMotionCapture／VSeeFaceでの実機確認は未実施です。VSeeFace向けにはVRM 0.xを使用してください。詳細は[確認ガイド](docs/prototype-guide.md)を参照してください。
+
+## ファイルの扱い
+
+変換とプレビューは端末内で処理し、入力モデルをサーバーへ送信しません。アプリと表情テンプレートは配信元から取得します。`GTM_ID`を設定した配信では、同意後にGoogle Analyticsによるアクセス解析を開始します。未同意・拒否時はタグを読み込みません。解析の目的はアクセス数の把握のみで、機能操作は計測しません。選択は90日間保存し、フッターから撤回できます。表示言語もブラウザーに保存します。
+
+## 開発
+
+Node.js 22.12以上を使用します。
 
 ```sh
 npm ci
 npm run dev
 ```
 
-表示されたローカルURLを開き、VRMをドロップしてください。変換後は保存と52表情の3Dプレビューができます。検証用モデルは`_local/vrm/`、生成済みサンプルは`_local/output/`にあります。
-
-現在の対応状況・制約・検証結果は[プロトタイプ確認ガイド](docs/prototype-guide.md)を参照してください。
+表示されたローカルURLを開いてください。
 
 ```sh
-npm test                # 変換エンジンの回帰検証
-npm run test:e2e        # Chromeで変換・保存・プレビューを検証
-npm run convert:local  # ローカル検証モデルを変換
-npm run validate:local # 元と出力をglTF Validatorで比較
-npm run build          # Cloudflare Pages向けにdist/を生成
+npm test                # エンジン・翻訳・言語選択の単体検証
+npm run test:e2e        # Chromeの操作検証
+npm run test:analytics  # 模擬Googleタグによる同意・通信検証
+npm run build          # Cloudflare Pages向けdist/を生成
+npm run preview        # ビルド済みアプリの確認
 ```
 
-プロジェクトの背景とルールは[docs/README.md](docs/README.md)にあります。
+ブラウザーテストはローカルChromeと検証モデルを使用します。モデルはリポジトリに含まれません。必要なモデル・配置・検証条件は[確認ガイド](docs/prototype-guide.md)と[ローカルモデル調査](docs/local-model-inspection.md)を参照してください。Chromeのパスは`PLAYWRIGHT_CHROME_PATH`で変更できます。
+
+Cloudflare Pagesはビルドコマンド`npm run build`、出力先`dist`で配置できます。変換APIやモデル保存用ストレージは不要です。アクセス解析を有効にする場合は、Cloudflareのビルド環境変数`GTM_ID`とGTM／GA4を[同意管理の手順](docs/analytics-and-consent.md)に従って設定してください。公開URL・多言語ページ・検索向け設定は[公開設定](docs/seo-and-publication.md)を参照してください。プロジェクトの設計・開発ルールは[docs/README.md](docs/README.md)にあります。
+
+## 不具合報告
+
+[GitHub Issues](https://github.com/utagestudio/perfectsync_attacher/issues)へ、アプリ・ブラウザーのバージョン、VRMの形式、操作手順、表示されたエラーを記載してください。VRM本体、秘密情報、公開許可のない画像は添付しないでください。
+
+## ライセンス・謝辞
+
+本体コードは[MIT](LICENSE)です。表情テンプレートは[hinzka氏の52blendshapes-for-VRoid-face](https://github.com/hinzka/52blendshapes-for-VRoid-face)を基にしています。第三者ライブラリとテンプレートには、それぞれの利用条件が適用されます。[ライセンス方針](docs/licenses.md)を参照してください。

@@ -1,4 +1,10 @@
+import { AppError } from '../i18n/messages.js';
+export const MAX_INPUT_BYTES = 100 * 1024 * 1024;
+const MAX_JSON_BYTES = 16 * 1024 * 1024;
+const MAX_ACCESSOR_VALUES = 8 * 1024 * 1024;
+const integer = (v) => Number.isSafeInteger(v) && v >= 0;
 export function parseGlb(buffer) {
+  if (buffer.byteLength > MAX_INPUT_BYTES) throw new AppError('error.inputSize');
   const bytes = new Uint8Array(buffer);
   const view = new DataView(buffer);
   if (
@@ -7,30 +13,103 @@ export function parseGlb(buffer) {
     view.getUint32(4, true) !== 2 ||
     view.getUint32(8, true) !== bytes.length
   )
-    throw new Error('有効なGLB形式のVRMではありません。');
+    throw new AppError('error.glbInvalid');
   let json, bin;
   for (let offset = 12; offset < bytes.length;) {
-    if (offset + 8 > bytes.length) throw new Error('GLBチャンクが途中で切れています。');
+    if (offset + 8 > bytes.length) throw new AppError('error.chunkTruncated');
     const length = view.getUint32(offset, true),
       type = view.getUint32(offset + 4, true);
-    if (length % 4 || offset + 8 + length > bytes.length)
-      throw new Error('GLBチャンクの長さが不正です。');
-    if (offset === 12 && type !== 0x4e4f534a) throw new Error('JSONチャンクが先頭にありません。');
+    if (length % 4 || offset + 8 + length > bytes.length) throw new AppError('error.chunkLength');
+    if (offset === 12 && type !== 0x4e4f534a) throw new AppError('error.jsonFirst');
     const chunk = bytes.subarray(offset + 8, offset + 8 + length);
     if (type === 0x4e4f534a) {
-      if (json) throw new Error('JSONチャンクが重複しています。');
-      json = JSON.parse(new TextDecoder().decode(chunk));
+      if (json) throw new AppError('error.jsonDuplicate');
+      if (length > MAX_JSON_BYTES) throw new AppError('error.jsonSize');
+      try {
+        json = JSON.parse(new TextDecoder().decode(chunk));
+      } catch {
+        throw new AppError('error.jsonInvalid');
+      }
     } else if (type === 0x004e4942) {
-      if (bin) throw new Error('BINチャンクが重複しています。');
+      if (bin) throw new AppError('error.binDuplicate');
       bin = chunk;
-    } else throw new Error('未対応のGLBチャンクを含みます。');
+    } else throw new AppError('error.chunkUnsupported');
     offset += 8 + length;
   }
-  if (!json || !bin || json.asset?.version !== '2.0')
-    throw new Error('JSONまたはBINがありません。');
-  if (json.buffers?.length !== 1 || json.buffers[0].uri || json.buffers[0].byteLength > bin.length)
-    throw new Error('外部バッファまたは複数バッファは未対応です。');
-  if (json.images?.some((x) => x.uri)) throw new Error('外部画像参照は未対応です。');
+  if (!json || !bin || json.asset?.version !== '2.0') throw new AppError('error.chunksMissing');
+  if (
+    json.buffers?.length !== 1 ||
+    json.buffers[0].uri !== undefined ||
+    !integer(json.buffers[0].byteLength) ||
+    json.buffers[0].byteLength > bin.length
+  )
+    throw new AppError('error.externalBuffers');
+  if (json.images?.some((x) => x.uri)) throw new AppError('error.externalImages');
+  for (const b of json.bufferViews ?? []) {
+    if (
+      b.buffer !== 0 ||
+      !integer(b.byteOffset ?? 0) ||
+      !integer(b.byteLength) ||
+      (b.byteOffset ?? 0) + b.byteLength > json.buffers[0].byteLength
+    )
+      throw new AppError('error.bufferViewBounds');
+  }
+  let totalValues = 0;
+  const dimensions = { ...components, MAT2: 4, MAT3: 9, MAT4: 16 };
+  for (const a of json.accessors ?? []) {
+    if (
+      !integer(a.count) ||
+      !Object.hasOwn(dimensions, a.type) ||
+      !Object.hasOwn(formats, a.componentType)
+    )
+      throw new AppError('error.accessorInvalid');
+    const width = dimensions[a.type],
+      size = formats[a.componentType][1];
+    const matrixColumns = { MAT2: 2, MAT3: 3, MAT4: 4 }[a.type];
+    const elementBytes = matrixColumns
+      ? matrixColumns * Math.ceil((matrixColumns * size) / 4) * 4
+      : width * size;
+    const range = (viewIndex, offset, count, bytes, stride) => {
+      const b = json.bufferViews?.[viewIndex];
+      if (
+        !integer(viewIndex) ||
+        !b ||
+        !integer(offset) ||
+        !integer(stride) ||
+        stride < bytes ||
+        !Number.isSafeInteger(offset + Math.max(0, count - 1) * stride + (count ? bytes : 0)) ||
+        offset + Math.max(0, count - 1) * stride + (count ? bytes : 0) > b.byteLength
+      )
+        throw new AppError('error.accessorBounds');
+    };
+    if (a.bufferView !== undefined)
+      range(
+        a.bufferView,
+        a.byteOffset ?? 0,
+        a.count,
+        elementBytes,
+        json.bufferViews?.[a.bufferView]?.byteStride ?? elementBytes,
+      );
+    else if (!integer(a.byteOffset ?? 0) || (a.byteOffset ?? 0) !== 0)
+      throw new AppError('error.accessorOffset');
+    if (a.sparse) {
+      const s = a.sparse;
+      if (
+        !integer(s.count) ||
+        s.count < 1 ||
+        s.count > a.count ||
+        !s.indices ||
+        !s.values ||
+        ![5121, 5123, 5125].includes(s.indices.componentType)
+      )
+        throw new AppError('error.sparseInvalid');
+      const indexBytes = formats[s.indices.componentType][1];
+      range(s.indices.bufferView, s.indices.byteOffset ?? 0, s.count, indexBytes, indexBytes);
+      range(s.values.bufferView, s.values.byteOffset ?? 0, s.count, elementBytes, elementBytes);
+    }
+    totalValues += a.count * width;
+    if (totalValues > MAX_ACCESSOR_VALUES) throw new AppError('error.accessorSize');
+  }
   return { json, bin };
 }
 const components = { SCALAR: 1, VEC2: 2, VEC3: 3, VEC4: 4 };
@@ -46,29 +125,37 @@ export function readAccessor(glb, index) {
   const a = glb.json.accessors?.[index];
   if (
     !a ||
-    !components[a.type] ||
-    !formats[a.componentType] ||
+    !Object.hasOwn(components, a.type) ||
+    !Object.hasOwn(formats, a.componentType) ||
     !Number.isSafeInteger(a.count) ||
     a.count < 0 ||
-    a.count > 10000000
+    a.count * components[a.type] > MAX_ACCESSOR_VALUES
   )
-    throw new Error('未対応または不正なaccessorです。');
+    throw new AppError('error.accessorInvalid');
   const width = components[a.type],
     [method, size] = formats[a.componentType];
-  const out = new Float64Array(a.count * width);
+  let out;
   function read(viewIndex, offset, count, stride, write) {
     const b = glb.json.bufferViews?.[viewIndex];
-    if (!b || b.buffer !== 0) throw new Error('bufferViewの参照が不正です。');
+    if (!integer(viewIndex) || !b || b.buffer !== 0)
+      throw new AppError('error.bufferViewReference');
     const start = (b.byteOffset ?? 0) + offset;
     const end = count ? offset + (count - 1) * stride + width * size : offset;
     if (
+      !integer(offset) ||
+      !integer(stride) ||
+      !integer(b.byteOffset ?? 0) ||
+      !integer(b.byteLength) ||
+      !integer(glb.json.buffers[0].byteLength) ||
+      (b.byteOffset ?? 0) + b.byteLength > glb.bin.byteLength ||
       offset < 0 ||
       stride < width * size ||
       end > b.byteLength ||
       start < 0 ||
       start + (end - offset) > glb.json.buffers[0].byteLength
     )
-      throw new Error('accessorがバッファ範囲外です。');
+      throw new AppError('error.accessorBounds');
+    if (!out) out = new Float64Array(a.count * width);
     const dv = new DataView(glb.bin.buffer, glb.bin.byteOffset, glb.bin.byteLength);
     for (let i = 0; i < count; i++)
       for (let c = 0; c < width; c++) {
@@ -80,7 +167,7 @@ export function readAccessor(glb, index) {
               : a.componentType === 5122
                 ? Math.max(v / 32767, -1)
                 : v / { 5121: 255, 5123: 65535, 5125: 4294967295 }[a.componentType];
-        if (!Number.isFinite(v)) throw new Error('頂点データに非有限値があります。');
+        if (!Number.isFinite(v)) throw new AppError('error.vertexNonfinite');
         write(i, c, v);
       }
   }
@@ -92,15 +179,18 @@ export function readAccessor(glb, index) {
       glb.json.bufferViews[a.bufferView]?.byteStride ?? width * size,
       (i, c, v) => (out[i * width + c] = v),
     );
+  if (!out) out = new Float64Array(a.count * width);
   if (a.sparse) {
     const s = a.sparse;
     if (
       !Number.isInteger(s.count) ||
       s.count < 1 ||
       s.count > a.count ||
+      !s.indices ||
+      !s.values ||
       ![5121, 5123, 5125].includes(s.indices.componentType)
     )
-      throw new Error('sparse accessorが不正です。');
+      throw new AppError('error.sparseInvalid');
     const indices = readAccessor(
       {
         ...glb,
@@ -121,7 +211,7 @@ export function readAccessor(glb, index) {
     );
     let previous = -1;
     for (const i of indices) {
-      if (i <= previous || i >= a.count) throw new Error('sparse indexが不正です。');
+      if (i <= previous || i >= a.count) throw new AppError('error.sparseIndex');
       previous = i;
     }
     read(
