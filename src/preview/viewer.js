@@ -1,3 +1,5 @@
+import { translate } from '../i18n/index.js';
+import { applyExtendedWeights } from './extended-weights.js';
 import { AppError } from '../i18n/messages.js';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -74,12 +76,18 @@ export async function createPreview(buffer, container, sliders, reset, isCurrent
     observer.disconnect();
     throw new AppError('error.previewCount', { count: names.length });
   }
+  const note = document.createElement('p');
+  note.className = 'extended-note';
+  note.dataset.i18n = 'preview.extendedHint';
+  note.textContent = translate(document.documentElement.lang, 'preview.extendedHint');
+  sliders.append(note);
   const inputs = [];
   for (const name of names) {
-    const row = document.createElement('label');
+    const row = document.createElement('div');
     row.className = 'slider-row';
     const caption = document.createElement('span');
     caption.textContent = name;
+    caption.id = `expression-${name}`;
     const value = document.createElement('output');
     value.textContent = '0%';
     const input = document.createElement('input');
@@ -89,17 +97,43 @@ export async function createPreview(buffer, container, sliders, reset, isCurrent
     input.step = 0.01;
     input.value = 0;
     input.setAttribute('aria-label', name);
-    input.addEventListener('input', () => {
+    const toggleLabel = document.createElement('label');
+    toggleLabel.className = 'extended-toggle';
+    const toggle = document.createElement('input');
+    toggle.type = 'checkbox';
+    toggle.setAttribute('aria-labelledby', `expression-${name} extended-${name}`);
+    const toggleText = document.createElement('span');
+    toggleText.id = `extended-${name}`;
+    toggleText.dataset.i18n = 'preview.extended';
+    toggleText.textContent = translate(document.documentElement.lang, 'preview.extended');
+    toggleLabel.dataset.i18nTitle = 'preview.extendedHint';
+    toggleLabel.title = translate(document.documentElement.lang, 'preview.extendedHint');
+    toggleLabel.append(toggle, toggleText);
+    const update = () => {
       vrm.expressionManager.setValue(name, Number(input.value));
       value.textContent = `${Math.round(input.value * 100)}%`;
-      input.style.setProperty('--range-fill', `${Number(input.value) * 100}%`);
+      input.style.setProperty(
+        '--range-fill',
+        `${((Number(input.value) - Number(input.min)) / (Number(input.max) - Number(input.min))) * 100}%`,
+      );
+    };
+    input.addEventListener('input', update);
+    toggle.addEventListener('change', () => {
+      const current = Number(input.value);
+      input.min = toggle.checked ? -1 : 0;
+      input.max = toggle.checked ? 2 : 1;
+      input.value = Math.max(Number(input.min), Math.min(Number(input.max), current));
+      update();
     });
-    row.append(caption, value, input);
+    row.append(caption, value, input, toggleLabel);
     sliders.append(row);
-    inputs.push({ input, value, name, row });
+    inputs.push({ input, value, name, row, toggle });
   }
   const resetValues = () => {
-    for (const { input, value, name } of inputs) {
+    for (const { input, value, name, toggle } of inputs) {
+      toggle.checked = false;
+      input.min = 0;
+      input.max = 1;
       input.value = 0;
       input.style.setProperty('--range-fill', '0%');
       value.textContent = '0%';
@@ -111,6 +145,10 @@ export async function createPreview(buffer, container, sliders, reset, isCurrent
     if (!container.clientWidth || !container.clientHeight) return;
     controls.update();
     vrm.update(0);
+    applyExtendedWeights(
+      vrm.expressionManager,
+      inputs.map(({ name, input }) => ({ name, weight: Number(input.value) })),
+    );
     renderer.render(scene, camera);
   });
   return () => {
@@ -118,6 +156,7 @@ export async function createPreview(buffer, container, sliders, reset, isCurrent
     observer.disconnect();
     reset.removeEventListener('click', resetValues);
     for (const { row } of inputs) row.remove();
+    note.remove();
     controls.dispose();
     VRMUtils.deepDispose(vrm.scene);
     renderer.dispose();

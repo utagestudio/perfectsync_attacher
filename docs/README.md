@@ -11,6 +11,7 @@
 - [アクセス解析・同意管理](analytics-and-consent.md)：GTM_ID・90日保存・撤回とGTM／GA4の設定手順。
 - [README・SEOと公開設定](seo-and-publication.md)：公開ドメイン・言語別ページ・メタ情報とビルド設定。
 - [多言語対応](internationalization.md)：言語の初期判定・保存・翻訳追加と検証範囲。
+- [プレビューの限界突破モード](extended-preview.md)：範囲変更・リセット・変形適用と検証。
 - [プロトタイプ確認ガイド](prototype-guide.md)：起動・操作・実装済み範囲と検証結果。
 - [ローカルモデル調査](local-model-inspection.md)：入力モデルの概要とPoC検証候補。
 

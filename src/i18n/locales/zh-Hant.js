@@ -100,6 +100,8 @@ export default {
   newFile: '轉換其他檔案',
   'viewer.label': '轉換後的 3D 模型',
   'expressions.title': '確認表情',
+  'preview.extended': '突破限制',
+  'preview.extendedHint': '僅限預覽：−100～200%。變形可能失真，不會影響儲存的 VRM。',
   reset: '全部重設',
   'preview.loading': '正在準備預覽…',
   'preview.instructions': '用滑桿調整表情。拖曳旋轉，滾輪縮放。',
