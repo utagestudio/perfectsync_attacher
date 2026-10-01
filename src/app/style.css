@@ -384,8 +384,54 @@ footer a {
 .slider-row input {
   grid-column: 1/-1;
   width: 100%;
-  margin: 8px 0;
+  height: 32px;
+  margin: 0;
+  padding: 0;
+  appearance: none;
+  background: transparent;
   accent-color: #3e8c78;
+  cursor: pointer;
+  border-radius: 8px;
+}
+.slider-row input:focus-visible {
+  outline: 2px solid #90b9a4;
+  outline-offset: 2px;
+}
+.slider-row input::-webkit-slider-runnable-track {
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    #3e8c78 var(--range-fill, 0%),
+    #d5e4dc var(--range-fill, 0%)
+  );
+}
+.slider-row input::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  margin-top: -3px;
+  border: 0;
+  border-radius: 50%;
+  background: #3e8c78;
+}
+.slider-row input::-moz-range-track {
+  height: 10px;
+  border: 0;
+  border-radius: 999px;
+  background: #d5e4dc;
+}
+.slider-row input::-moz-range-progress {
+  height: 10px;
+  border-radius: 999px;
+  background: #3e8c78;
+}
+.slider-row input::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border: 0;
+  border-radius: 50%;
+  background: #3e8c78;
 }
 .slider-row output {
   text-align: right;

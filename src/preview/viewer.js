@@ -91,6 +91,7 @@ export async function createPreview(buffer, container, sliders, reset, isCurrent
     input.addEventListener('input', () => {
       vrm.expressionManager.setValue(name, Number(input.value));
       value.textContent = `${Math.round(input.value * 100)}%`;
+      input.style.setProperty('--range-fill', `${Number(input.value) * 100}%`);
     });
     row.append(caption, value, input);
     sliders.append(row);
@@ -99,6 +100,7 @@ export async function createPreview(buffer, container, sliders, reset, isCurrent
   const resetValues = () => {
     for (const { input, value, name } of inputs) {
       input.value = 0;
+      input.style.setProperty('--range-fill', '0%');
       value.textContent = '0%';
       vrm.expressionManager.setValue(name, 0);
     }
