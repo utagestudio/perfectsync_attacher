@@ -14,7 +14,10 @@
 - 変形テンプレートはhinzka氏の[52blendshapes-for-VRoid-face](https://github.com/hinzka/52blendshapes-for-VRoid-face)を加工したもの。本体のMITの対象外とし、取得時の[利用条件](../public/templates/SOURCE-README.md)と[出所・ハッシュ](../public/templates/provenance.json)を保存する。
 - 保存済みの素材利用条件には商用利用・改変・再配布・販売の許可がある。含まれる第三者の権利やサービス等の規約は別途従う。
 
-公開前の確認として、間接依存を含むライセンス本文・NOTICE、ブラウザー配布物への必要な表示・同梱、素材の第三者条件の確認が残っている。本体のライセンス採用をもって、全依存・素材の監査完了とは扱わない。
+公開前チェックで、lockfileの60依存エントリーのライセンス表記と、この環境にインストールされたパッケージのLICENSE・NOTICE等の所在を確認した。ライセンス種別はMIT・Apache-2.0・ISC・BSD-3-Clause・MPL-2.0。未インストールの他OS向けoptional依存は表記のみの確認であり、全プラットフォームの本文監査完了とは扱わない。開発用native bindingの一部はルートにLICENSEがないため、親パッケージrolldownのMIT本文・第三者ライセンスを併せて参照する。
+
+ブラウザー配布物のライセンス本文はViteの`build.license`で`dist/THIRD-PARTY-LICENSES.txt`へ出力し、画面からリンクする。現在のバンドルにはThree.jsとthree-vrmが含まれ、pixiv系列14パッケージのMIT本文は一致している。本体のMIT本文も`dist/LICENSE.txt`へ同梱する。Viteが生成するブラウザー用補助コードの表示も保持するため、ViteのLICENSE（同梱依存の表示を含む）を`dist/VITE-LICENSE.txt`へ同梱する。開発・検証用のVite、Lightning CSS、Playwright、glTF Validator等の実行コードはdistへ同梱しない。これらやnode_modulesを別途再配布する場合は、元のLICENSE・NOTICEと各条件を維持する。
+
 
 ## 入力・出力VRM
 
