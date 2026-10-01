@@ -299,10 +299,21 @@ progress {
   overflow: auto;
 }
 footer {
+  flex-wrap: wrap;
+  gap: 6px 14px;
   font-size: 11px;
   color: #8a9587;
   border-top: 1px solid #e1e7dd;
   padding: 12px 30px;
+}
+.copyright {
+  white-space: nowrap;
+}
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
 }
 footer a {
   color: inherit;
