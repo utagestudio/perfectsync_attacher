@@ -86,7 +86,7 @@ export async function createPreview(buffer, container, sliders, reset, isCurrent
   noteBody.dataset.i18n = 'preview.extendedNote';
   noteBody.textContent = translate(document.documentElement.lang, 'preview.extendedNote');
   note.append(noteTitle, noteBody);
-  sliders.append(note);
+  sliders.before(note);
   const inputs = [];
   for (const name of names) {
     const row = document.createElement('div');

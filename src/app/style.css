@@ -975,3 +975,14 @@ h1 .intro-first {
 .expression-panel:has(> #preview-retry[hidden]) > .sliders {
   grid-row: 3;
 }
+
+.expression-panel:has(> #preview-retry[hidden]):has(> .extended-note) {
+  grid-template-rows: auto auto auto minmax(0, 1fr);
+  row-gap: 0;
+}
+.expression-panel > .extended-note {
+  grid-row: 3;
+}
+.expression-panel:has(> #preview-retry[hidden]):has(> .extended-note) > .sliders {
+  grid-row: 4;
+}
