@@ -70,3 +70,77 @@ test('mobile layout and invalid file drop', async ({ page }) => {
   await expect(page.locator('#result')).toBeHidden();
   await page.screenshot({ path: '_local/preview-mobile.png', fullPage: true });
 });
+
+for (const viewport of [
+  { width: 1280, height: 720 },
+  { width: 1280, height: 1000 },
+  { width: 390, height: 844 },
+  { width: 390, height: 640 },
+  { width: 844, height: 390 },
+]) {
+  test(`stage switching fits ${viewport.width}x${viewport.height}`, async ({ page }) => {
+    await page.setViewportSize(viewport);
+    const fits = async () => {
+      const metrics = await page.evaluate(() => ({
+        width: document.documentElement.scrollWidth,
+        height: document.documentElement.scrollHeight,
+        viewportWidth: innerWidth,
+        viewportHeight: innerHeight,
+      }));
+      expect(metrics.width).toBeLessThanOrEqual(metrics.viewportWidth);
+      expect(metrics.height).toBeLessThanOrEqual(metrics.viewportHeight);
+    };
+    await page.goto('/');
+    await expect(page.locator('#waiting')).toBeVisible();
+    await fits();
+    await page.locator('#file').setInputFiles('_local/vrm/woman1.vrm');
+    await expect(page.locator('#result')).toBeVisible();
+    await expect(page.locator('#waiting')).toBeHidden();
+    await expect(page.locator('#preview')).toBeHidden();
+    await fits();
+    await page.locator('#preview-button').click();
+    await expect(page.locator('#sliders input')).toHaveCount(52);
+    await expect(page.locator('#result')).toBeHidden();
+    await expect(page.locator('#viewer canvas')).toBeVisible();
+    await fits();
+    await page.locator('input[aria-label="JawOpen"]').fill('0.7');
+    await page.screenshot({
+      path: `_local/staged-preview-${viewport.width}x${viewport.height}.png`,
+    });
+    await page.locator('#back-result').click();
+    await expect(page.locator('#result')).toBeVisible();
+    await expect(page.locator('#preview')).toBeHidden();
+    await page.locator('#preview-button').click();
+    await expect(page.locator('input[aria-label="JawOpen"]')).toHaveValue('0.7');
+    await expect(page.locator('#sliders input')).toHaveCount(52);
+    await page.locator('#back-result').click();
+    await page.locator('#new-file').click();
+    await expect(page.locator('#waiting')).toBeVisible();
+    await expect(page.locator('#result')).toBeHidden();
+    await expect(page.locator('#sliders input')).toHaveCount(0);
+    await fits();
+  });
+}
+
+test('processing is a single screen and can be cancelled', async ({ page }) => {
+  let release;
+  const gate = new Promise((resolve) => {
+    release = resolve;
+  });
+  await page.route('**/templates/hinzka-female.glb', async (route) => {
+    await gate;
+    await route.continue();
+  });
+  await page.setViewportSize({ width: 390, height: 640 });
+  await page.goto('/');
+  await page.locator('#file').setInputFiles('_local/vrm/woman1.vrm');
+  await expect(page.locator('#progress-area')).toBeVisible();
+  await expect(page.locator('#drop')).toBeHidden();
+  expect(await page.evaluate(() => document.documentElement.scrollHeight <= innerHeight)).toBe(
+    true,
+  );
+  await page.locator('#cancel').click();
+  release();
+  await expect(page.locator('#drop')).toBeVisible();
+  await expect(page.locator('#status')).toContainText('キャンセル');
+});

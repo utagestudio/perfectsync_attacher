@@ -2,12 +2,16 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
-export async function createPreview(buffer, container, sliders, reset) {
+export async function createPreview(buffer, container, sliders, reset, isCurrent = () => true) {
   const loader = new GLTFLoader();
   loader.register((parser) => new VRMLoaderPlugin(parser));
   const gltf = await loader.parseAsync(buffer, '');
   const vrm = gltf.userData.vrm;
   if (!vrm) throw new Error('VRMを読み込めませんでした');
+  if (!isCurrent()) {
+    VRMUtils.deepDispose(vrm.scene);
+    return () => {};
+  }
   VRMUtils.rotateVRM0(vrm);
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
@@ -42,6 +46,7 @@ export async function createPreview(buffer, container, sliders, reset) {
   const observer = new ResizeObserver(() => {
     const w = container.clientWidth,
       h = container.clientHeight;
+    if (!w || !h) return;
     renderer.setSize(w, h);
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
@@ -89,6 +94,7 @@ export async function createPreview(buffer, container, sliders, reset) {
   };
   reset.addEventListener('click', resetValues);
   renderer.setAnimationLoop(() => {
+    if (!container.clientWidth || !container.clientHeight) return;
     controls.update();
     vrm.update(0);
     renderer.render(scene, camera);

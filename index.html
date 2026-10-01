@@ -15,90 +15,76 @@
         >◈ <span>Perfect Sync <b>Attacher</b></span></a
       ><span class="version" id="version"></span>
     </header>
+    <nav class="stages" aria-label="変換の段階">
+      <span data-stage="waiting" aria-current="step">1 <b>ファイル</b></span
+      ><i aria-hidden="true">―</i><span data-stage="result">2 <b>結果</b></span
+      ><i aria-hidden="true">―</i><span data-stage="preview">3 <b>プレビュー</b></span>
+    </nav>
     <main>
-      <section class="intro">
-        <p class="eyebrow">VROID → PERFECT SYNC</p>
-        <h1>あなたのアバターに、<br /><span>もっと豊かな表情を。</span></h1>
-        <p class="lead">
-          VRMをドロップして、52種類の表情を追加。<br />Unityを開かず、ブラウザーだけで。
-        </p>
-        <div class="chips">
-          <span>VRM 0.x / 1.0</span><span>端末内で処理</span><span>元ファイルを保持</span>
+      <section id="waiting" class="screen waiting" aria-label="VRMファイルの選択">
+        <div class="intro">
+          <p class="eyebrow">VROID → PERFECT SYNC</p>
+          <h1>あなたのアバターに、<br /><span>もっと豊かな表情を。</span></h1>
+          <p class="lead">VRMをドロップして、52種類の表情を追加。</p>
+          <div class="chips">
+            <span>VRM 0.x / 1.0</span><span>端末内で処理</span><span>元ファイルを保持</span>
+          </div>
         </div>
+        <div class="workspace">
+          <div id="drop" class="drop">
+            <div class="file-icon" aria-hidden="true">↓</div>
+            <h2>VRMファイルをここにドロップ</h2>
+            <p>または、お使いの端末から選択してください</p>
+            <label class="primary file-label"
+              >ファイルを選択<input
+                id="file"
+                type="file"
+                accept=".vrm"
+                aria-label="VRMファイルを選択"
+            /></label>
+            <p class="small">1ファイルずつ・100 MiBまで</p>
+          </div>
+          <div class="progress-area" id="progress-area" hidden>
+            <p class="eyebrow">ADDING EXPRESSIONS</p>
+            <h2>表情を追加しています</h2>
+            <strong id="filename"></strong><progress id="progress" max="100" value="0"></progress
+            ><button id="cancel" class="secondary">キャンセル</button>
+          </div>
+        </div>
+        <p class="hint">対応するVRoidの顔メッシュが対象です。</p>
       </section>
-      <section class="workspace" aria-label="VRM変換">
-        <div id="drop" class="drop">
-          <div class="file-icon" aria-hidden="true">↓</div>
-          <h2>VRMファイルをここにドロップ</h2>
-          <p>または、お使いの端末から選択してください</p>
-          <label class="primary file-label"
-            >ファイルを選択<input
-              id="file"
-              type="file"
-              accept=".vrm"
-              aria-label="VRMファイルを選択"
-          /></label>
-          <p class="small">1ファイルずつ・100 MiBまで</p>
-        </div>
-        <div class="progress-area" id="progress-area" hidden>
-          <div class="progress-heading">
-            <strong id="filename"></strong
-            ><button id="cancel" class="text-button">キャンセル</button>
+      <section id="result" class="screen result" aria-label="変換結果" hidden>
+        <div class="result-card">
+          <span class="check" aria-hidden="true">✓</span>
+          <p class="eyebrow">READY TO DOWNLOAD</p>
+          <h1 id="result-title" tabindex="-1">52表情を追加しました</h1>
+          <p id="result-detail"></p>
+          <div class="actions">
+            <a id="download" class="primary" download>変換したVRMを保存</a
+            ><button id="preview-button" class="secondary">表情をプレビュー →</button>
           </div>
-          <progress id="progress" max="100" value="0"></progress>
-        </div>
-        <p id="status" role="status" aria-live="polite">ファイルは外部へ送信されません。</p>
-        <div id="result" hidden>
-          <div class="result-top">
-            <div>
-              <p class="eyebrow">READY TO DOWNLOAD</p>
-              <h2 id="result-title">52表情を追加しました</h2>
-              <p id="result-detail"></p>
-            </div>
-            <span class="check" aria-hidden="true">✓</span>
-          </div>
-          <a id="download" class="primary" download>変換したVRMを保存</a
-          ><button id="preview-button" class="secondary">表情をプレビュー</button>
           <p id="warnings" class="small"></p>
+          <button id="new-file" class="text-button">別のファイルを変換</button>
         </div>
       </section>
-      <section id="preview" class="preview" hidden>
+      <section id="preview" class="screen preview" aria-label="表情プレビュー" hidden>
         <div class="preview-heading">
           <div>
             <p class="eyebrow">EXPRESSION CHECK</p>
-            <h2>表情を確認</h2>
+            <h1 id="preview-title" tabindex="-1">表情を確認</h1>
           </div>
-          <button id="reset" class="secondary">すべてリセット</button>
+          <div class="actions">
+            <button id="back-result" class="secondary">← 結果に戻る</button
+            ><button id="reset" class="secondary">すべてリセット</button>
+          </div>
         </div>
         <p id="preview-status" role="status">プレビューを準備しています…</p>
         <div class="preview-layout">
           <div id="viewer" aria-label="変換後の3Dモデル"></div>
-          <div id="sliders" class="sliders"></div>
+          <div id="sliders" class="sliders" aria-label="表情スライダー"></div>
         </div>
       </section>
-      <section class="notes">
-        <article>
-          <span class="step">01</span>
-          <h3>ドロップ</h3>
-          <p>VRoid Studioから書き出した<br />VRMを選択します。</p>
-        </article>
-        <article>
-          <span class="step">02</span>
-          <h3>表情を追加</h3>
-          <p>対応する顔メッシュを確認して、<br />52表情の変形データを追加します。</p>
-        </article>
-        <article>
-          <span class="step">03</span>
-          <h3>保存して確認</h3>
-          <p>プレビューで表情を確認し、<br />お使いのアプリで試してください。</p>
-        </article>
-      </section>
-      <aside class="notice">
-        <strong>開発中のプロトタイプです</strong>
-        <p>
-          対応する顔のUV・メッシュ構造を持つモデルが対象です。身体と顔が結合されたモデルなどは未対応です。WebcamMotionCapture／VSeeFaceでの動作確認はこれから行います。
-        </p>
-      </aside>
+      <p id="status" role="status" aria-live="polite">ファイルは外部へ送信されません。</p>
     </main>
     <footer>
       <span>Perfect Sync Attacher</span
