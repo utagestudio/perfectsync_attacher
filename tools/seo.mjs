@@ -115,6 +115,7 @@ export function seoPlugin(origin, indexable = !!origin) {
     transformIndexHtml: {
       order: 'post',
       handler(html, context) {
+        if (context.filename?.endsWith('/analytics.html')) return html;
         if (context.server) {
           const requestPath = (context.originalUrl ?? context.path).split('?')[0];
           const language =

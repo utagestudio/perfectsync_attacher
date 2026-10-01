@@ -1,13 +1,17 @@
 import { defineConfig, loadEnv } from 'vite';
 import { seoPlugin, siteOrigin } from './tools/seo.mjs';
 import { publicSiteUrl } from './config/site.js';
+import { containerId, analyticsPlugin } from './tools/analytics.mjs';
 import { readFileSync } from 'node:fs';
 export default defineConfig(({ mode }) => {
   const origin = siteOrigin(loadEnv(mode, process.cwd(), 'SITE_URL').SITE_URL ?? publicSiteUrl);
+  const gtmId = containerId(loadEnv(mode, process.cwd(), 'GTM_ID').GTM_ID);
   const previewBranch = process.env.CF_PAGES_BRANCH && process.env.CF_PAGES_BRANCH !== 'master';
   return {
+    define: { __GTM_ID__: JSON.stringify(gtmId) },
     plugins: [
       seoPlugin(origin, !!origin && !previewBranch),
+      analyticsPlugin(gtmId),
       {
         name: 'project-license',
         configureServer(server) {
@@ -72,6 +76,15 @@ export default defineConfig(({ mode }) => {
       },
     },
     preview: { host: '127.0.0.1' },
-    build: { target: 'es2022', license: { fileName: 'THIRD-PARTY-LICENSES.txt' } },
+    build: {
+      target: 'es2022',
+      rolldownOptions: {
+        input: {
+          app: new URL('./index.html', import.meta.url).pathname,
+          analytics: new URL('./analytics.html', import.meta.url).pathname,
+        },
+      },
+      license: { fileName: 'THIRD-PARTY-LICENSES.txt' },
+    },
   };
 });
