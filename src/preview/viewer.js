@@ -116,6 +116,7 @@ export async function createPreview(buffer, container, sliders, reset, isCurrent
     toggle.title = translate(document.documentElement.lang, 'preview.extendedHint');
     toggle.append(toggleText);
     const update = () => {
+      row.classList.toggle('out-of-range', Number(input.value) < 0 || Number(input.value) > 1);
       vrm.expressionManager.setValue(name, Number(input.value));
       value.textContent = `${Math.round(input.value * 100)}%`;
       input.style.setProperty(
@@ -138,7 +139,8 @@ export async function createPreview(buffer, container, sliders, reset, isCurrent
     inputs.push({ input, value, name, row, toggle });
   }
   const resetValues = () => {
-    for (const { input, value, name, toggle } of inputs) {
+    for (const { input, value, name, toggle, row } of inputs) {
+      row.classList.remove('out-of-range');
       toggle.setAttribute('aria-pressed', 'false');
       input.min = 0;
       input.max = 1;

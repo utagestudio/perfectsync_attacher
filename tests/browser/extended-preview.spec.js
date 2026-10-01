@@ -22,15 +22,23 @@ test('extended preview preserves downloads, clamps on disable and resets all tog
   await expect(range).toHaveValue('0.7');
   await expect(range).toHaveAttribute('min', '-1');
   await expect(range).toHaveAttribute('max', '2');
+  for (const number of ['0', '1', '0.5']) {
+    await range.fill(number);
+    await expect(toggle).toHaveCSS('background-color', 'rgb(62, 140, 120)');
+  }
   await range.fill('-1');
+  await expect(toggle).toHaveCSS('background-color', 'rgb(195, 78, 87)');
+  await expect(range).toHaveCSS('accent-color', 'rgb(195, 78, 87)');
   await expect(row.locator('output')).toHaveText('-100%');
   await page.waitForTimeout(100);
   await page.screenshot({ path: '_local/extended-negative.png' });
   await toggle.click();
   await expect(range).toHaveValue('0');
+  await expect(row).not.toHaveClass(/out-of-range/);
   await toggle.click();
   await range.fill('2');
   await expect(row.locator('output')).toHaveText('200%');
+  await expect(toggle).toHaveCSS('background-color', 'rgb(195, 78, 87)');
   await page.screenshot({ path: '_local/extended-positive.png' });
   await page.locator('#language').selectOption('en');
   await expect(row.locator('.extended-toggle span')).toHaveText('BOOST');
@@ -53,6 +61,7 @@ test('extended preview preserves downloads, clamps on disable and resets all tog
   await range.fill('-0.5');
   await page.locator('#reset').click();
   await expect(page.locator('#sliders button[aria-pressed="true"]')).toHaveCount(0);
+  await expect(page.locator('#sliders .out-of-range')).toHaveCount(0);
   expect(
     await ranges.evaluateAll((inputs) =>
       inputs.every((i) => i.value === '0' && i.min === '0' && i.max === '1'),
