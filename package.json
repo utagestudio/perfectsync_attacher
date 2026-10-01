@@ -1,0 +1,26 @@
+{
+  "name": "perfectsync-attacher",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "inspect:vrm": "node tools/inspect-vrm.mjs",
+    "test": "node --test tests/core.test.mjs",
+    "convert:local": "node tools/convert-local.mjs",
+    "validate:local": "node tools/validate-local.mjs",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "gltf-validator": "^2.0.0-dev.3.10",
+    "prettier": "^3.9.9",
+    "vite": "^8.3.1"
+  },
+  "dependencies": {
+    "@pixiv/three-vrm": "^3.5.5",
+    "three": "^0.186.1"
+  }
+}
