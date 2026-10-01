@@ -106,7 +106,9 @@ export default {
   'expressions.title': '표정 확인',
   'preview.extended': '범위 확장',
   'preview.extendedHint':
-    '미리보기 전용: −100~200%. 변형이 깨질 수 있습니다. 저장할 VRM에는 반영되지 않습니다.',
+    '범위 확장: 보너스 기능. −100~200%. 변형이 깨질 수 있습니다. 저장할 VRM에는 반영되지 않습니다.',
+  'preview.extendedNote':
+    ': 보너스 기능. −100~200%. 변형이 깨질 수 있습니다. 저장할 VRM에는 반영되지 않습니다.',
   reset: '모두 초기화',
   'preview.loading': '미리보기 준비 중…',
   'preview.instructions': '슬라이더로 표정을 조절하세요. 드래그로 회전, 휠로 확대합니다.',

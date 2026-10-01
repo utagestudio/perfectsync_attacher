@@ -959,3 +959,7 @@ h1 .intro-first {
   color: #586b5f;
   line-height: 1.5;
 }
+
+.extended-note-title {
+  font-family: 'Dela Gothic One', sans-serif;
+}

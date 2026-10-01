@@ -78,8 +78,14 @@ export async function createPreview(buffer, container, sliders, reset, isCurrent
   }
   const note = document.createElement('p');
   note.className = 'extended-note';
-  note.dataset.i18n = 'preview.extendedHint';
-  note.textContent = translate(document.documentElement.lang, 'preview.extendedHint');
+  const noteTitle = document.createElement('span');
+  noteTitle.className = 'extended-note-title';
+  noteTitle.dataset.i18n = 'preview.extended';
+  noteTitle.textContent = translate(document.documentElement.lang, 'preview.extended');
+  const noteBody = document.createElement('span');
+  noteBody.dataset.i18n = 'preview.extendedNote';
+  noteBody.textContent = translate(document.documentElement.lang, 'preview.extendedNote');
+  note.append(noteTitle, noteBody);
   sliders.append(note);
   const inputs = [];
   for (const name of names) {

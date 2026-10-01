@@ -107,7 +107,9 @@ export default {
   'expressions.title': 'Check expressions',
   'preview.extended': 'Extended range',
   'preview.extendedHint':
-    'Preview only: −100–200%. Deformations may break. Saved VRM is unchanged.',
+    'Extended range: Bonus feature. −100–200%. Deformations may break. Saved VRM is unchanged.',
+  'preview.extendedNote':
+    ': Bonus feature. −100–200%. Deformations may break. Saved VRM is unchanged.',
   reset: 'Reset all',
   'preview.loading': 'Preparing preview…',
   'preview.instructions': 'Adjust expressions with sliders. Drag to rotate; scroll to zoom.',
