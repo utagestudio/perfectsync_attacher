@@ -27,7 +27,7 @@ test('explicit URL overrides browser and saved preference; back preserves previe
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   await expect(page.locator('#language')).toHaveValue('en');
   await page.locator('#file').setInputFiles('_local/vrm/woman1.vrm');
-  await expect(page.locator('#sliders input')).toHaveCount(52);
+  await expect(page.locator('#sliders input[type="range"]')).toHaveCount(52);
   await page.locator('input[aria-label="JawOpen"]').fill('0.7');
   const href = await page.locator('#download').getAttribute('href');
   await page.locator('#language').selectOption('zh-Hant');

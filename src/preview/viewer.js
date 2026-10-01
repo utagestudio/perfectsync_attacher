@@ -1,3 +1,5 @@
+import { translate } from '../i18n/index.js';
+import { applyExtendedWeights } from './extended-weights.js';
 import { AppError } from '../i18n/messages.js';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -74,12 +76,24 @@ export async function createPreview(buffer, container, sliders, reset, isCurrent
     observer.disconnect();
     throw new AppError('error.previewCount', { count: names.length });
   }
+  const note = document.createElement('p');
+  note.className = 'extended-note';
+  const noteTitle = document.createElement('span');
+  noteTitle.className = 'extended-note-title';
+  noteTitle.dataset.i18n = 'preview.extended';
+  noteTitle.textContent = translate(document.documentElement.lang, 'preview.extended');
+  const noteBody = document.createElement('span');
+  noteBody.dataset.i18n = 'preview.extendedNote';
+  noteBody.textContent = translate(document.documentElement.lang, 'preview.extendedNote');
+  note.append(noteTitle, noteBody);
+  sliders.before(note);
   const inputs = [];
   for (const name of names) {
-    const row = document.createElement('label');
+    const row = document.createElement('div');
     row.className = 'slider-row';
     const caption = document.createElement('span');
     caption.textContent = name;
+    caption.id = `expression-${name}`;
     const value = document.createElement('output');
     value.textContent = '0%';
     const input = document.createElement('input');
@@ -89,17 +103,47 @@ export async function createPreview(buffer, container, sliders, reset, isCurrent
     input.step = 0.01;
     input.value = 0;
     input.setAttribute('aria-label', name);
-    input.addEventListener('input', () => {
+    const toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'extended-toggle';
+    toggle.setAttribute('aria-pressed', 'false');
+    toggle.setAttribute('aria-labelledby', `expression-${name} extended-${name}`);
+    const toggleText = document.createElement('span');
+    toggleText.id = `extended-${name}`;
+    toggleText.dataset.i18n = 'preview.extendedButton';
+    toggleText.textContent = translate(document.documentElement.lang, 'preview.extendedButton');
+    toggle.dataset.i18nTitle = 'preview.extendedHint';
+    toggle.title = translate(document.documentElement.lang, 'preview.extendedHint');
+    toggle.append(toggleText);
+    const update = () => {
+      row.classList.toggle('out-of-range', Number(input.value) < 0 || Number(input.value) > 1);
       vrm.expressionManager.setValue(name, Number(input.value));
       value.textContent = `${Math.round(input.value * 100)}%`;
-      input.style.setProperty('--range-fill', `${Number(input.value) * 100}%`);
+      input.style.setProperty(
+        '--range-fill',
+        `${((Number(input.value) - Number(input.min)) / (Number(input.max) - Number(input.min))) * 100}%`,
+      );
+    };
+    input.addEventListener('input', update);
+    toggle.addEventListener('click', () => {
+      const enabled = toggle.getAttribute('aria-pressed') !== 'true';
+      toggle.setAttribute('aria-pressed', String(enabled));
+      const current = Number(input.value);
+      input.min = enabled ? -1 : 0;
+      input.max = enabled ? 2 : 1;
+      input.value = Math.max(Number(input.min), Math.min(Number(input.max), current));
+      update();
     });
-    row.append(caption, value, input);
+    row.append(caption, value, input, toggle);
     sliders.append(row);
-    inputs.push({ input, value, name, row });
+    inputs.push({ input, value, name, row, toggle });
   }
   const resetValues = () => {
-    for (const { input, value, name } of inputs) {
+    for (const { input, value, name, toggle, row } of inputs) {
+      row.classList.remove('out-of-range');
+      toggle.setAttribute('aria-pressed', 'false');
+      input.min = 0;
+      input.max = 1;
       input.value = 0;
       input.style.setProperty('--range-fill', '0%');
       value.textContent = '0%';
@@ -111,6 +155,10 @@ export async function createPreview(buffer, container, sliders, reset, isCurrent
     if (!container.clientWidth || !container.clientHeight) return;
     controls.update();
     vrm.update(0);
+    applyExtendedWeights(
+      vrm.expressionManager,
+      inputs.map(({ name, input }) => ({ name, weight: Number(input.value) })),
+    );
     renderer.render(scene, camera);
   });
   return () => {
@@ -118,6 +166,7 @@ export async function createPreview(buffer, container, sliders, reset, isCurrent
     observer.disconnect();
     reset.removeEventListener('click', resetValues);
     for (const { row } of inputs) row.remove();
+    note.remove();
     controls.dispose();
     VRMUtils.deepDispose(vrm.scene);
     renderer.dispose();

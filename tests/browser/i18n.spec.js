@@ -81,7 +81,7 @@ for (const entry of cases) {
       await expect(page.locator('#status')).toHaveText(entry.invalid);
       await page.locator('#file').setInputFiles('_local/vrm/woman1.vrm');
       await expect(page.locator('#result-title')).toHaveText(entry.result);
-      await expect(page.locator('#sliders input')).toHaveCount(52);
+      await expect(page.locator('#sliders input[type="range"]')).toHaveCount(52);
       await page.locator('input[aria-label="JawOpen"]').fill('0.7');
       await page.locator('.result-notes summary').click();
       for (const viewport of viewports) {

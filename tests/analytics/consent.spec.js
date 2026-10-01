@@ -47,7 +47,7 @@ test('unknown or rejected consent makes no Google request and never blocks conve
   await page.locator('#consent-reject').click();
   await expect(page.locator('#consent-dialog')).toBeHidden();
   await page.locator('#file').setInputFiles('_local/vrm/woman1.vrm');
-  await expect(page.locator('#sliders input')).toHaveCount(52);
+  await expect(page.locator('#sliders input[type="range"]')).toHaveCount(52);
   await page.locator('input[aria-label="JawOpen"]').fill('0.7');
   expect(requests).toEqual([]);
   await page.reload();
@@ -82,7 +82,7 @@ test('allow starts one container; withdrawal destroys execution without losing o
   ]);
   expect(await page.evaluate(() => window.dataLayer)).toBeUndefined();
   await page.locator('#file').setInputFiles('_local/vrm/woman1.vrm');
-  await expect(page.locator('#sliders input')).toHaveCount(52);
+  await expect(page.locator('#sliders input[type="range"]')).toHaveCount(52);
   await page.locator('input[aria-label="JawOpen"]').fill('0.7');
   const output = await page.locator('#download').getAttribute('href');
   await page.locator('#language').selectOption('ko');
@@ -175,7 +175,7 @@ for (const language of ['ja', 'en', 'ko', 'zh-Hant', 'zh-Hans']) {
     }
     await page.locator('#consent-close').click();
     await page.locator('#file').setInputFiles('_local/vrm/woman1.vrm');
-    await expect(page.locator('#sliders input')).toHaveCount(52);
+    await expect(page.locator('#sliders input[type="range"]')).toHaveCount(52);
     expect(await page.evaluate(() => document.documentElement.scrollHeight <= innerHeight)).toBe(
       true,
     );

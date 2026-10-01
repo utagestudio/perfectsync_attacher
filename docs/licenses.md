@@ -22,3 +22,7 @@
 ## 入力・出力VRM
 
 入力されたVRMに本体コードのMITライセンスを適用しない。変換後も元モデルの権利・利用条件に従い、追加した変形データの利用条件も尊重する。変換によって元モデルの商用利用・再配布等の許可範囲を拡張しない。
+
+## ボタン用フォント
+
+Dela Gothic One（Google Fonts / Dela Gothic Project Authors）を限界突破ボタンに使用。SIL Open Font License 1.1。必要な文字のサブセットと著作権・ライセンス本文を`public/fonts/`に同梱し、フォントは本体のMITとは別ライセンスで配布します。

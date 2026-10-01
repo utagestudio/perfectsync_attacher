@@ -17,7 +17,7 @@ for (const file of ['02_utage3.4.0-vrm0.0.vrm', '02_utage3.4vrm1.0.vrm'])
     const bytes = await readFile(await download.path());
     const out = parseGlb(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength));
     expect(out.json.meshes[0].extras.targetNames).toHaveLength(109);
-    await expect(page.locator('#sliders input')).toHaveCount(52);
+    await expect(page.locator('#sliders input[type="range"]')).toHaveCount(52);
     await expect(page.locator('#viewer canvas')).toBeVisible();
     await page.locator('input[aria-label="JawOpen"]').fill('0.7');
     await expect(page.locator('input[aria-label="JawOpen"]')).toHaveValue('0.7');
@@ -97,7 +97,7 @@ for (const viewport of [
     await expect(page.locator('#result')).toBeVisible();
     await expect(page.locator('#waiting')).toBeHidden();
     await fits();
-    await expect(page.locator('#sliders input')).toHaveCount(52);
+    await expect(page.locator('#sliders input[type="range"]')).toHaveCount(52);
     await expect(page.locator('#result')).toBeVisible();
     await expect(page.locator('#download')).toBeVisible();
     await expect(page.locator('#new-file')).toBeVisible();
@@ -114,7 +114,7 @@ for (const viewport of [
     await page.locator('#new-file').click();
     await expect(page.locator('#waiting')).toBeVisible();
     await expect(page.locator('#result')).toBeHidden();
-    await expect(page.locator('#sliders input')).toHaveCount(0);
+    await expect(page.locator('#sliders input[type="range"]')).toHaveCount(0);
     await fits();
   });
 }
@@ -177,7 +177,7 @@ test('new file clears preview while it is still loading', async ({ page }) => {
   await page.locator('#new-file').click();
   release();
   await expect(page.locator('#waiting')).toBeVisible();
-  await expect(page.locator('#sliders input')).toHaveCount(0);
+  await expect(page.locator('#sliders input[type="range"]')).toHaveCount(0);
   await expect(page.locator('#viewer canvas')).toHaveCount(0);
 });
 

@@ -105,6 +105,12 @@ export default {
   newFile: 'Convert another file',
   'viewer.label': 'Converted 3D model',
   'expressions.title': 'Check expressions',
+  'preview.extendedButton': 'BOOST',
+  'preview.extended': 'Extended range',
+  'preview.extendedHint':
+    'Extended range: Bonus feature. −100–200%. Deformations may break. Saved VRM is unchanged.',
+  'preview.extendedNote':
+    ': Bonus feature. −100–200%. Deformations may break. Saved VRM is unchanged.',
   reset: 'Reset all',
   'preview.loading': 'Preparing preview…',
   'preview.instructions': 'Adjust expressions with sliders. Drag to rotate; scroll to zoom.',
