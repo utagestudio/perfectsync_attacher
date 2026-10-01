@@ -1,4 +1,9 @@
 export default {
+  'introduction.open': 'Watch how it works',
+  'introduction.title': 'How it works',
+  'introduction.description': 'About 1 minute, with audio. The video interface is in Japanese.',
+  'introduction.playHint': 'Press play to watch the video.',
+
   'seo.title': 'Perfect Sync Attacher | Add 52 expressions to your VRM',
   'error.inputSize': 'Choose a file no larger than 100 MiB.',
   'error.glbInvalid': 'This is not a valid GLB-format VRM.',

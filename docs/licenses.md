@@ -26,3 +26,7 @@
 ## ボタン用フォント
 
 Dela Gothic One（Google Fonts / Dela Gothic Project Authors）を限界突破ボタンに使用。SIL Open Font License 1.1。必要な文字のサブセットと著作権・ライセンス本文を`public/fonts/`に同梱し、フォントは本体のMITとは別ライセンスで配布します。
+
+## 紹介動画
+
+`public/media/`の紹介動画とそのサムネイルは本体コードのMITとは別の素材です。動画内のBGMはBGMerのクレジットを維持しています。動画・音楽などの素材利用や再配布に対し、本体のMITによる許諾は適用しません。詳細は[紹介動画](introduction-video.md)を参照してください。

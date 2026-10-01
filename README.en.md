@@ -4,7 +4,7 @@
 
 A web app that adds 52 Perfect Sync expressions to compatible VRoid Studio VRM models. No Unity setup is required: drop a VRM, check the expressions, and save the converted file.
 
-Release version: `0.3.0`. The [public app](https://perfectsync.utage.games/) is hosted on Cloudflare Pages.
+Release version: `1.0.0`. The [public app](https://perfectsync.utage.games/) is hosted on Cloudflare Pages.
 
 ![English waiting screen](docs/images/waiting-en.png)
 

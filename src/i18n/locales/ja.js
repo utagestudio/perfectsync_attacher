@@ -1,4 +1,9 @@
 export default {
+  'introduction.open': '使い方を見る',
+  'introduction.title': '使い方の紹介',
+  'introduction.description': '約1分・音声あり。動画内の画面は日本語です。',
+  'introduction.playHint': '再生ボタンを押して動画をご覧ください。',
+
   'seo.title': 'Perfect Sync Attacher | VRMに52表情を追加',
   'error.inputSize': '100 MiB以下のファイルを選択してください。',
   'error.glbInvalid': '有効なGLB形式のVRMではありません。',

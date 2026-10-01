@@ -1,3 +1,4 @@
+import { initializeIntroductionVideo } from './introduction-video.js';
 import { initializeConsent } from '../analytics/ui.js';
 import {
   initialLanguage,
@@ -13,6 +14,7 @@ import { MAX_INPUT_BYTES } from '../core/glb.js';
 import { version } from '../../package.json';
 const $ = (id) => document.getElementById(id);
 $('version').textContent = version;
+initializeIntroductionVideo();
 let storage;
 try {
   storage = window.localStorage;

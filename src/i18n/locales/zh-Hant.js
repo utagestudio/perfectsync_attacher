@@ -1,4 +1,9 @@
 export default {
+  'introduction.open': '觀看使用方法',
+  'introduction.title': '使用方法介紹',
+  'introduction.description': '約1分鐘，含音訊。影片中的介面為日文。',
+  'introduction.playHint': '請按播放按鈕觀看影片。',
+
   'seo.title': 'Perfect Sync Attacher | 為 VRM 新增 52 種表情',
   'error.inputSize': '請選擇不超過 100 MiB 的檔案。',
   'error.glbInvalid': '這不是有效的 GLB 格式 VRM。',
