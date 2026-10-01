@@ -4,7 +4,9 @@
 
 A web app that adds 52 Perfect Sync expressions to compatible VRoid Studio VRM models. No Unity setup is required: drop a VRM, check the expressions, and save the converted file.
 
-This is a development build. A public demo URL has not been finalized.
+This is a development build. The planned public URL is `https://perfectsync.utage.games/`.
+
+![English waiting screen](docs/images/waiting-en.png)
 
 ## Usage
 
@@ -49,7 +51,7 @@ npm run preview        # Preview the production build
 
 Browser tests use a local Chrome installation and private test models. Models are not included in this repository. See the [prototype guide](docs/prototype-guide.md) and [local model notes](docs/local-model-inspection.md) (Japanese) for the required fixtures and setup. Set `PLAYWRIGHT_CHROME_PATH` to use a different Chrome path.
 
-For Cloudflare Pages, use `npm run build` and the output directory `dist`. No conversion API or model storage is required. See [docs/README.md](docs/README.md) (Japanese) for the design and development conventions.
+For Cloudflare Pages, use `npm run build` and the output directory `dist`. No conversion API or model storage is required. See the [publication settings](docs/seo-and-publication.md) (Japanese) for the public URL, localized pages, and search metadata. See [docs/README.md](docs/README.md) (Japanese) for the design and development conventions.
 
 ## Reporting issues
 

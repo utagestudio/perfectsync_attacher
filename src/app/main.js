@@ -1,5 +1,6 @@
 import {
   initialLanguage,
+  languageFromPath,
   isLanguage,
   saveLanguage,
   translate,
@@ -17,7 +18,9 @@ try {
 } catch {
   /* Persistence may be blocked. */
 }
-let language = initialLanguage(navigator.languages ?? [navigator.language], storage);
+const preferredLanguage = () =>
+  initialLanguage(navigator.languages ?? [navigator.language], storage);
+let language = languageFromPath(location.pathname) ?? preferredLanguage();
 const displayedMessages = new Map([
   ['status', { code: 'privacy' }],
   ['preview-status', { code: 'preview.loading' }],
@@ -35,6 +38,21 @@ function display(id, code, params = {}) {
 }
 function renderLanguage() {
   translateDocument(language);
+  document.title = translate(language, 'seo.title');
+  const meta = (property, value) =>
+    document.querySelector(`meta[property="${property}"]`)?.setAttribute('content', value);
+  meta('og:title', document.title);
+  meta('og:description', translate(language, 'meta.description'));
+  meta(
+    'og:locale',
+    { ja: 'ja_JP', en: 'en_US', ko: 'ko_KR', 'zh-Hant': 'zh_TW', 'zh-Hans': 'zh_CN' }[language],
+  );
+  const canonical = document.querySelector('link[rel="canonical"]');
+  if (canonical) {
+    const path = languageFromPath(location.pathname) ? `/${language}/` : '/';
+    canonical.href = new URL(path, canonical.href).href;
+    meta('og:url', canonical.href);
+  }
   $('language').value = language;
   for (const [id, message] of displayedMessages) $(id).textContent = text(message);
   $('warnings').textContent = warnings.map(text).join('\n');
@@ -45,6 +63,11 @@ $('language').addEventListener('change', (event) => {
   if (!isLanguage(event.target.value)) return;
   language = event.target.value;
   saveLanguage(language, storage);
+  history.pushState(null, '', `/${language}/` + location.search + location.hash);
+  renderLanguage();
+});
+window.addEventListener('popstate', () => {
+  language = languageFromPath(location.pathname) ?? preferredLanguage();
   renderLanguage();
 });
 function showScreen(name) {

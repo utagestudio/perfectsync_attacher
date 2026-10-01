@@ -4,7 +4,9 @@
 
 VRoid Studio製の対応VRMに、Perfect Sync用の52表情を追加するウェブアプリです。Unityの起動は不要。VRMをドラッグ＆ドロップし、表情を確認して保存できます。
 
-現在は開発版です。公開デモのURLは未確定です。
+現在は開発版です。公開予定URLは`https://perfectsync.utage.games/`です。
+
+![日本語の待機画面](docs/images/waiting-ja.png)
 
 ## 使い方
 
@@ -49,7 +51,7 @@ npm run preview        # ビルド済みアプリの確認
 
 ブラウザーテストはローカルChromeと検証モデルを使用します。モデルはリポジトリに含まれません。必要なモデル・配置・検証条件は[確認ガイド](docs/prototype-guide.md)と[ローカルモデル調査](docs/local-model-inspection.md)を参照してください。Chromeのパスは`PLAYWRIGHT_CHROME_PATH`で変更できます。
 
-Cloudflare Pagesはビルドコマンド`npm run build`、出力先`dist`で配置できます。変換APIやモデル保存用ストレージは不要です。プロジェクトの設計・開発ルールは[docs/README.md](docs/README.md)にあります。
+Cloudflare Pagesはビルドコマンド`npm run build`、出力先`dist`で配置できます。変換APIやモデル保存用ストレージは不要です。公開URL・多言語ページ・検索向け設定は[公開設定](docs/seo-and-publication.md)を参照してください。プロジェクトの設計・開発ルールは[docs/README.md](docs/README.md)にあります。
 
 ## 不具合報告
 

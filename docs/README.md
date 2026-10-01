@@ -8,6 +8,7 @@
 - [実現可能性と技術設計](feasibility-and-design.md)：技術方針、制約、検証計画。
 - [開発・コミット方針](development-workflow.md)：実装時の変更単位とコミット方法。
 - [バージョン・リリース方針](versioning-and-release.md)：開発版の番号更新とリリース版のmaster向けPR手順。
+- [README・SEOと公開設定](seo-and-publication.md)：公開ドメイン・言語別ページ・メタ情報とビルド設定。
 - [多言語対応](internationalization.md)：言語の初期判定・保存・翻訳追加と検証範囲。
 - [プロトタイプ確認ガイド](prototype-guide.md)：起動・操作・実装済み範囲と検証結果。
 - [ローカルモデル調査](local-model-inspection.md)：入力モデルの概要とPoC検証候補。

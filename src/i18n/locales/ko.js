@@ -1,4 +1,5 @@
 export default {
+  'seo.title': 'Perfect Sync Attacher | VRM에 표정 52개 추가',
   'error.inputSize': '100 MiB 이하의 파일을 선택해 주세요.',
   'error.glbInvalid': '올바른 GLB 형식의 VRM이 아닙니다.',
   'error.chunkTruncated': 'GLB 청크가 중간에 잘렸습니다.',

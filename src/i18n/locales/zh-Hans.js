@@ -1,4 +1,5 @@
 export default {
+  'seo.title': 'Perfect Sync Attacher | 为 VRM 添加 52 种表情',
   'error.inputSize': '请选择不超过 100 MiB 的文件。',
   'error.glbInvalid': '这不是有效的 GLB 格式 VRM。',
   'error.chunkTruncated': 'GLB 数据块不完整。',

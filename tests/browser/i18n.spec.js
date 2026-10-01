@@ -183,5 +183,7 @@ test('language switching works when browser storage is blocked', async ({ page }
   await page.locator('#language').selectOption('ko');
   await expect(page.locator('.file-label')).toHaveText('파일 선택');
   await page.reload();
+  await expect(page.locator('html')).toHaveAttribute('lang', 'ko');
+  await page.goto('/');
   await expect(page.locator('html')).toHaveAttribute('lang', 'ja');
 });

@@ -63,3 +63,10 @@ export function translateDocument(language, root = document) {
     }
   }
 }
+
+export function languageFromPath(path) {
+  return Object.keys(catalogs).find(
+    (language) =>
+      path === `/${language}/` || path === `/${language}` || path === `/${language}/index.html`,
+  );
+}

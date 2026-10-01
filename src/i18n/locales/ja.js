@@ -1,4 +1,5 @@
 export default {
+  'seo.title': 'Perfect Sync Attacher | VRMに52表情を追加',
   'error.inputSize': '100 MiB以下のファイルを選択してください。',
   'error.glbInvalid': '有効なGLB形式のVRMではありません。',
   'error.chunkTruncated': 'GLBチャンクが途中で切れています。',

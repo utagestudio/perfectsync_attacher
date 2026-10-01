@@ -1,4 +1,5 @@
 export default {
+  'seo.title': 'Perfect Sync Attacher | Add 52 expressions to your VRM',
   'error.inputSize': 'Choose a file no larger than 100 MiB.',
   'error.glbInvalid': 'This is not a valid GLB-format VRM.',
   'error.chunkTruncated': 'A GLB chunk is truncated.',
