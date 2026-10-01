@@ -76,7 +76,18 @@
             ><button id="cancel" class="secondary" data-i18n="cancel">キャンセル</button>
           </div>
         </div>
-        <p class="hint" data-i18n="hint">対応するVRoidの顔メッシュが対象です。</p>
+        <div class="waiting-help">
+          <p class="hint" data-i18n="hint">対応するVRoidの顔メッシュが対象です。</p>
+          <button
+            id="introduction-open"
+            class="introduction-open"
+            aria-haspopup="dialog"
+            aria-controls="introduction-dialog"
+          >
+            <img src="/media/introduction-poster.jpg" alt="" width="80" height="45" />
+            <span aria-hidden="true">▶</span><span data-i18n="introduction.open">使い方を見る</span>
+          </button>
+        </div>
       </section>
       <section
         id="result"
@@ -198,6 +209,33 @@
           許可しない／取り消す</button
         ><button id="consent-accept" class="secondary" data-i18n="consent.accept">許可する</button>
       </div>
+    </dialog>
+    <dialog
+      id="introduction-dialog"
+      aria-labelledby="introduction-title"
+      aria-describedby="introduction-description"
+    >
+      <div class="introduction-heading">
+        <h2 id="introduction-title" data-i18n="introduction.title">使い方の紹介</h2>
+        <button id="introduction-close" class="secondary" data-i18n="consent.close" autofocus>
+          閉じる
+        </button>
+      </div>
+      <p id="introduction-description" data-i18n="introduction.description">
+        約1分・音声あり。動画内の画面は日本語です。
+      </p>
+      <video
+        id="introduction-video"
+        controls
+        playsinline
+        preload="none"
+        poster="/media/introduction-poster.jpg"
+        aria-label="使い方の紹介動画"
+        data-i18n-aria-label="introduction.title"
+      ></video>
+      <p id="introduction-play-hint" data-i18n="introduction.playHint" hidden>
+        再生ボタンを押して動画をご覧ください。
+      </p>
     </dialog>
     <script type="module" src="/src/app/main.js"></script>
   </body>

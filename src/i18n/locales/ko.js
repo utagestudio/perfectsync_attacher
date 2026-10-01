@@ -1,4 +1,9 @@
 export default {
+  'introduction.open': '사용 방법 보기',
+  'introduction.title': '사용 방법 소개',
+  'introduction.description': '약 1분 · 소리 있음. 영상 속 화면은 일본어입니다.',
+  'introduction.playHint': '재생 버튼을 눌러 영상을 시청하세요.',
+
   'seo.title': 'Perfect Sync Attacher | VRM에 표정 52개 추가',
   'error.inputSize': '100 MiB 이하의 파일을 선택해 주세요.',
   'error.glbInvalid': '올바른 GLB 형식의 VRM이 아닙니다.',

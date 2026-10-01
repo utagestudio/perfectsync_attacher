@@ -1035,3 +1035,143 @@ html[lang='en'] .extended-toggle > span {
     margin-bottom: 0;
   }
 }
+
+.waiting-help {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  grid-column: 1/-1;
+  flex-wrap: wrap;
+}
+.introduction-open {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px 4px 4px;
+  border: 1px solid #d5e4dc;
+  border-radius: 8px;
+  background: #fff;
+  color: #327b69;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.introduction-open img {
+  width: 64px;
+  height: 36px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.introduction-open:hover {
+  background: #edf2ea;
+}
+.introduction-open:focus-visible {
+  outline: 2px solid #3e8c78;
+  outline-offset: 3px;
+}
+#introduction-dialog {
+  width: min(960px, calc(100vw - 24px));
+  max-height: calc(100dvh - 24px);
+  box-sizing: border-box;
+  padding: 16px;
+  border: 1px solid #d5e4dc;
+  border-radius: 14px;
+  background: #fff;
+  color: #244b43;
+}
+#introduction-dialog::backdrop {
+  background: #12251fcc;
+}
+.introduction-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.introduction-heading h2 {
+  margin: 0;
+  font-size: 18px;
+}
+#introduction-description,
+#introduction-play-hint {
+  margin: 8px 0;
+  font-size: 12px;
+}
+#introduction-video {
+  display: block;
+  width: 100%;
+  max-height: calc(100dvh - 150px);
+  aspect-ratio: 16/9;
+  object-fit: contain;
+  background: #111;
+  border-radius: 6px;
+}
+@media (max-width: 640px) {
+  .waiting-help {
+    gap: 6px;
+    flex-direction: column;
+  }
+  #introduction-dialog {
+    padding: 12px;
+  }
+}
+@media (max-height: 520px) {
+  .waiting-help {
+    flex-direction: row;
+    gap: 8px;
+  }
+  .introduction-open img {
+    width: 48px;
+    height: 27px;
+  }
+  .introduction-open {
+    font-size: 11px;
+  }
+}
+@media (max-width: 640px) and (max-height: 700px) {
+  .waiting {
+    gap: 6px;
+  }
+  .waiting .file-icon {
+    display: none;
+  }
+  .waiting h1 {
+    font-size: 23px;
+    line-height: 1.25;
+  }
+  .waiting .chips {
+    margin-top: 6px;
+  }
+}
+@media (max-height: 520px) {
+  .waiting .file-icon {
+    display: none;
+  }
+  .waiting h1 {
+    font-size: 21px;
+    line-height: 1.25;
+  }
+  .waiting-help {
+    align-self: end;
+  }
+  .introduction-open img {
+    width: 40px;
+    height: 23px;
+  }
+}
+@media (max-width: 640px) and (max-height: 700px) {
+  .waiting .workspace {
+    padding: 8px;
+  }
+  .waiting .drop {
+    padding: 8px;
+  }
+}
+@media (max-width: 640px) and (max-height: 700px) {
+  .introduction-open img {
+    width: 48px;
+    height: 27px;
+  }
+}
