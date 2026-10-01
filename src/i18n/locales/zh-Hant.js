@@ -118,4 +118,17 @@ export default {
   'error.timeout': '處理逾時。請重新選擇檔案。',
   'progress.reading': '正在讀取檔案…',
   'status.cancelled': '已取消轉換。您可以重新選擇檔案。',
+  'consent.settings': '分析設定',
+  'consent.title': '造訪分析設定',
+  'consent.description':
+    'UTAGE.GAMES 使用 Google Analytics 統計造訪次數。允許後將開始與 Google 通訊並儲存分析 Cookie。不會傳送 VRM 檔案或轉換、下載、預覽操作資訊。',
+  'consent.optional': '不允許也能使用所有功能。選擇會儲存 90 天，您可隨時在此變更。',
+  'consent.accept': '允許',
+  'consent.reject': '拒絕／撤回',
+  'consent.close': '關閉',
+  'consent.accepted': '目前：已允許造訪分析。',
+  'consent.rejected': '目前：未允許造訪分析。',
+  'consent.unknown': '尚未選擇。造訪分析尚未執行。',
+  'consent.session': '此瀏覽器無法儲存選擇，僅會保留到關閉或重新載入此頁面。',
+  'consent.googlePrivacy': 'Google 隱私權政策',
 };

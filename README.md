@@ -4,7 +4,7 @@
 
 VRoid Studio製の対応VRMに、Perfect Sync用の52表情を追加するウェブアプリです。Unityの起動は不要。VRMをドラッグ＆ドロップし、表情を確認して保存できます。
 
-現在は開発版です。公開予定URLは`https://perfectsync.utage.games/`です。
+現在は開発版です。[公開アプリ](https://perfectsync.utage.games/)はCloudflare Pagesで配信しています。
 
 ![日本語の待機画面](docs/images/waiting-ja.png)
 
@@ -29,7 +29,7 @@ VRoid Studio製の対応VRMに、Perfect Sync用の52表情を追加するウェ
 
 ## ファイルの扱い
 
-変換とプレビューは端末内で処理し、入力モデルをサーバーへ送信しません。アプリと表情テンプレートは配信元から取得します。現時点でアクセス解析は実装していません。手動選択した表示言語だけをブラウザーに保存します。
+変換とプレビューは端末内で処理し、入力モデルをサーバーへ送信しません。アプリと表情テンプレートは配信元から取得します。`GTM_ID`を設定した配信では、同意後にGoogle Analyticsによるアクセス解析を開始します。未同意・拒否時はタグを読み込みません。解析の目的はアクセス数の把握のみで、機能操作は計測しません。選択は90日間保存し、フッターから撤回できます。表示言語もブラウザーに保存します。
 
 ## 開発
 
@@ -45,13 +45,14 @@ npm run dev
 ```sh
 npm test                # エンジン・翻訳・言語選択の単体検証
 npm run test:e2e        # Chromeの操作検証
+npm run test:analytics  # 模擬Googleタグによる同意・通信検証
 npm run build          # Cloudflare Pages向けdist/を生成
 npm run preview        # ビルド済みアプリの確認
 ```
 
 ブラウザーテストはローカルChromeと検証モデルを使用します。モデルはリポジトリに含まれません。必要なモデル・配置・検証条件は[確認ガイド](docs/prototype-guide.md)と[ローカルモデル調査](docs/local-model-inspection.md)を参照してください。Chromeのパスは`PLAYWRIGHT_CHROME_PATH`で変更できます。
 
-Cloudflare Pagesはビルドコマンド`npm run build`、出力先`dist`で配置できます。変換APIやモデル保存用ストレージは不要です。公開URL・多言語ページ・検索向け設定は[公開設定](docs/seo-and-publication.md)を参照してください。プロジェクトの設計・開発ルールは[docs/README.md](docs/README.md)にあります。
+Cloudflare Pagesはビルドコマンド`npm run build`、出力先`dist`で配置できます。変換APIやモデル保存用ストレージは不要です。アクセス解析を有効にする場合は、Cloudflareのビルド環境変数`GTM_ID`とGTM／GA4を[同意管理の手順](docs/analytics-and-consent.md)に従って設定してください。公開URL・多言語ページ・検索向け設定は[公開設定](docs/seo-and-publication.md)を参照してください。プロジェクトの設計・開発ルールは[docs/README.md](docs/README.md)にあります。
 
 ## 不具合報告
 

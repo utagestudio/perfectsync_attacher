@@ -4,7 +4,7 @@
 
 A web app that adds 52 Perfect Sync expressions to compatible VRoid Studio VRM models. No Unity setup is required: drop a VRM, check the expressions, and save the converted file.
 
-This is a development build. The planned public URL is `https://perfectsync.utage.games/`.
+This is a development build. The [public app](https://perfectsync.utage.games/) is hosted on Cloudflare Pages.
 
 ![English waiting screen](docs/images/waiting-en.png)
 
@@ -29,7 +29,7 @@ Local validation converted 8 of 10 models, with zero glTF validation errors in s
 
 ## Privacy
 
-Conversion and preview run on your device. Input models are not uploaded. The app and expression template are fetched from the serving site. Analytics are not implemented in the current build. Only your manually selected interface language is stored in the browser.
+Conversion and preview run on your device. Input models are not uploaded. The app and expression template are fetched from the serving site. Deployments configured with `GTM_ID` start Google Analytics only after consent. No tags load before consent or after refusal. Analytics are used to count visits; application actions are not tracked. Choices are saved for 90 days and can be withdrawn from the footer. Your interface language is also stored in the browser.
 
 ## Development
 
@@ -45,13 +45,14 @@ Open the local URL shown in the terminal.
 ```sh
 npm test                # Engine, translation and language preference tests
 npm run test:e2e        # Chrome interaction tests
+npm run test:analytics  # Consent and network tests using a local Google tag stub
 npm run build          # Generate dist/ for Cloudflare Pages
 npm run preview        # Preview the production build
 ```
 
 Browser tests use a local Chrome installation and private test models. Models are not included in this repository. See the [prototype guide](docs/prototype-guide.md) and [local model notes](docs/local-model-inspection.md) (Japanese) for the required fixtures and setup. Set `PLAYWRIGHT_CHROME_PATH` to use a different Chrome path.
 
-For Cloudflare Pages, use `npm run build` and the output directory `dist`. No conversion API or model storage is required. See the [publication settings](docs/seo-and-publication.md) (Japanese) for the public URL, localized pages, and search metadata. See [docs/README.md](docs/README.md) (Japanese) for the design and development conventions.
+For Cloudflare Pages, use `npm run build` and the output directory `dist`. No conversion API or model storage is required. To enable analytics, set the Cloudflare build variable `GTM_ID` and configure GTM / GA4 following the [consent setup guide](docs/analytics-and-consent.md) (Japanese). See the [publication settings](docs/seo-and-publication.md) (Japanese) for the public URL, localized pages, and search metadata. See [docs/README.md](docs/README.md) (Japanese) for the design and development conventions.
 
 ## Reporting issues
 

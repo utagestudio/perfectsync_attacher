@@ -1,3 +1,4 @@
+import { initializeConsent } from '../analytics/ui.js';
 import {
   initialLanguage,
   languageFromPath,
@@ -56,9 +57,12 @@ function renderLanguage() {
   $('language').value = language;
   for (const [id, message] of displayedMessages) $(id).textContent = text(message);
   $('warnings').textContent = warnings.map(text).join('\n');
+  consentUI?.refreshLanguage();
 }
 let warnings = [];
+let consentUI;
 renderLanguage();
+consentUI = initializeConsent({ storage, text: (key) => translate(language, key) });
 $('language').addEventListener('change', (event) => {
   if (!isLanguage(event.target.value)) return;
   language = event.target.value;

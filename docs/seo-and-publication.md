@@ -2,7 +2,7 @@
 
 ## 公開URLと生成物
 
-公開予定URLは`https://perfectsync.utage.games/`。日英READMEと、モデルを含まない待機画面の例を用意する。
+公開URLは`https://perfectsync.utage.games/`。`https://perfectsync-attacher.pages.dev/`もユーザーにより公開済み。日英READMEと、モデルを含まない待機画面の例を用意する。
 
 本番ビルドでは次の静的ページを生成する。画面は共通で、言語ごとの初期HTML・title・descriptionを翻訳する。
 
@@ -23,7 +23,7 @@
 
 ## ビルド・配信設定
 
-Cloudflare Pagesのビルドコマンドは`npm run build`、出力先は`dist`、本番ブランチは`master`を想定する。カスタムドメインとして`perfectsync.utage.games`を設定する。ドメインの接続・DNS・デプロイはこの工程では実施していない。
+Cloudflare Pagesのビルドコマンドは`npm run build`、出力先は`dist`、本番ブランチは`master`を想定する。カスタムドメインとして`perfectsync.utage.games`を設定する。ユーザーによる公開後、両ドメインのHTTP 200とCSP・Referrer-Policy・nosniffを確認した。今回のGTM対応コードはまだ配信していない。
 
 公開URLの既定値は`config/site.js`で管理する。別ドメインで公開する場合は、ファイルを変更するかビルド環境の`SITE_URL`で上書きする。HTTPSのoriginのみを受け付け、パス・認証情報・query・fragmentを含む値ではビルドを停止する。環境変数全体をブラウザーへ公開する仕組みは追加しない。
 
@@ -47,7 +47,7 @@ Cloudflareが`CF_PAGES_BRANCH`を設定し、その値が`master`以外なら、
 
 `assets/og.svg`を編集し、`node tools/generate-og.mjs`で`public/og.png`を更新できる。ローカルChromeが必要で、`PLAYWRIGHT_CHROME_PATH`で実行ファイルを指定できる。
 
-単体検証はURL制限、5言語の初期HTML・canonical・hreflang、サイトマップ、検索対象外ビルドと404生成を確認する。Chrome操作検証はJavaScript実行前の翻訳HTML、URLの優先順位、言語切替・戻る操作と調整値の保持を含む。通常・URLなし・Cloudflare開発ブランチの本番ビルドも確認する。実際のCloudflare配信確認は公開後に実施する。
+単体検証はURL制限、5言語の初期HTML・canonical・hreflang、サイトマップ、検索対象外ビルドと404生成を確認する。Chrome操作検証はJavaScript実行前の翻訳HTML、URLの優先順位、言語切替・戻る操作と調整値の保持を含む。通常・URLなし・Cloudflare開発ブランチの本番ビルドも確認する。公開後、両ドメインのHTTP応答と配信ヘッダーを読み取り確認した。GTM対応の配信後は、設定に応じた新しいヘッダーと実コンテナーの通信を確認する。
 
 ## 参照した公式資料
 

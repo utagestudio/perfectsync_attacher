@@ -123,4 +123,19 @@ export default {
   'error.timeout': 'Processing timed out. Please select the file again.',
   'progress.reading': 'Reading file…',
   'status.cancelled': 'Conversion cancelled. You can choose another file.',
+  'consent.settings': 'Analytics settings',
+  'consent.title': 'Access analytics settings',
+  'consent.description':
+    'UTAGE.GAMES uses Google Analytics to count visits. Allowing analytics starts communication with Google and stores analytics cookies. VRM files and conversion, download or preview activity are not sent.',
+  'consent.optional':
+    'All features work without analytics. Your choice is saved for 90 days and can be changed here at any time.',
+  'consent.accept': 'Allow',
+  'consent.reject': 'Decline / withdraw',
+  'consent.close': 'Close',
+  'consent.accepted': 'Current choice: analytics allowed.',
+  'consent.rejected': 'Current choice: analytics declined.',
+  'consent.unknown': 'No choice yet. Analytics is not running.',
+  'consent.session':
+    'Your choice cannot be saved in this browser. It lasts until you close or reload this page.',
+  'consent.googlePrivacy': 'Google Privacy Policy',
 };

@@ -843,3 +843,71 @@ h1 .intro-first {
     grid-template-rows: minmax(0, 0.75fr) minmax(0, 1.25fr);
   }
 }
+
+.footer-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+#consent-dialog {
+  position: fixed;
+  inset: auto 16px 16px;
+  margin: 0 auto;
+  width: min(580px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  padding: 22px;
+  border: 1px solid #b1cabb;
+  border-radius: 16px;
+  background: #fff;
+  color: #203c39;
+  box-shadow: 0 12px 40px #203c3933;
+  z-index: 10;
+  font-size: 13px;
+}
+.consent-heading,
+.consent-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.consent-heading h2 {
+  margin: 0;
+  font-size: 17px;
+}
+.consent-heading button {
+  font-size: 11px;
+  padding: 5px 9px;
+}
+#consent-dialog p {
+  margin: 12px 0;
+}
+#consent-dialog a {
+  color: #357e69;
+  font-size: 12px;
+}
+.consent-actions {
+  margin-top: 18px;
+}
+.consent-actions button {
+  flex: 1;
+  font-size: 12px;
+}
+@media (max-width: 640px) {
+  #consent-dialog {
+    padding: 16px;
+    font-size: 12px;
+  }
+  .consent-actions {
+    gap: 8px;
+  }
+  .consent-actions button {
+    padding: 9px;
+    font-size: 11px;
+  }
+}

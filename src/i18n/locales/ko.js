@@ -122,4 +122,19 @@ export default {
   'error.timeout': '처리 시간 한도를 초과했습니다. 파일을 다시 선택해 주세요.',
   'progress.reading': '파일 읽는 중…',
   'status.cancelled': '변환을 취소했습니다. 파일을 다시 선택할 수 있습니다.',
+  'consent.settings': '분석 설정',
+  'consent.title': '접속 분석 설정',
+  'consent.description':
+    'UTAGE.GAMES는 방문 횟수 파악을 위해 Google Analytics를 사용합니다. 허용하면 Google과 통신하고 분석 쿠키를 저장합니다. VRM 파일과 변환·저장·미리보기 활동은 전송하지 않습니다.',
+  'consent.optional':
+    '허용하지 않아도 모든 기능을 사용할 수 있습니다. 선택은 90일 동안 저장되며 여기에서 언제든 변경할 수 있습니다.',
+  'consent.accept': '허용',
+  'consent.reject': '거부 / 철회',
+  'consent.close': '닫기',
+  'consent.accepted': '현재: 접속 분석을 허용했습니다.',
+  'consent.rejected': '현재: 접속 분석을 허용하지 않았습니다.',
+  'consent.unknown': '아직 선택하지 않았습니다. 접속 분석은 실행되지 않습니다.',
+  'consent.session':
+    '이 브라우저에 선택을 저장할 수 없습니다. 페이지를 닫거나 새로고침할 때까지 유지합니다.',
+  'consent.googlePrivacy': 'Google 개인정보처리방침',
 };

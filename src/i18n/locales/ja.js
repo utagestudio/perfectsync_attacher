@@ -119,4 +119,19 @@ export default {
   'error.timeout': '処理時間の上限を超えました。ファイルを選び直してください。',
   'progress.reading': 'ファイルを読み込んでいます…',
   'status.cancelled': '変換をキャンセルしました。ファイルを選び直せます。',
+  'consent.settings': 'アクセス解析',
+  'consent.title': 'アクセス解析の設定',
+  'consent.description':
+    'UTAGE.GAMESは、アクセス数の把握にGoogle Analyticsを使用します。許可するとGoogleへの通信と解析用Cookieの保存が始まります。VRMファイルや変換・保存・プレビューの操作情報は送信しません。',
+  'consent.optional':
+    '許可しなくてもすべての機能を利用できます。選択は90日間保存し、ここからいつでも変更できます。',
+  'consent.accept': '許可する',
+  'consent.reject': '許可しない／取り消す',
+  'consent.close': '閉じる',
+  'consent.accepted': '現在：アクセス解析を許可しています。',
+  'consent.rejected': '現在：アクセス解析を許可していません。',
+  'consent.unknown': '現在：未選択です。アクセス解析は動作していません。',
+  'consent.session':
+    'ブラウザーに選択を保存できません。ページを閉じる・再読み込みするまで選択を保持します。',
+  'consent.googlePrivacy': 'Googleのプライバシーポリシー',
 };

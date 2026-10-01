@@ -41,12 +41,13 @@ window.addEventListener('message', (event) => {
     allow_ad_personalization_signals: false,
   });
   window.dataLayer.push({ 'gtm.start': Date.now(), event: 'gtm.js' });
-  window.dataLayer.push({
-    event: 'psa_page_view',
-    page_location: pageLocation,
-    page_title: 'Perfect Sync Attacher',
-    page_referrer: '',
-  });
+  if (event.data.countPage)
+    window.dataLayer.push({
+      event: 'psa_page_view',
+      page_location: pageLocation,
+      page_title: 'Perfect Sync Attacher',
+      page_referrer: '',
+    });
   const script = document.createElement('script');
   script.async = true;
   script.src = `https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(containerId)}`;
