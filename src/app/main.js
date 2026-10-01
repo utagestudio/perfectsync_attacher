@@ -1,11 +1,52 @@
-import ja from '../i18n/locales/ja.js';
-import { formatMessage } from '../i18n/messages.js';
-const messageText = (message) => formatMessage(ja, message.code, message.params);
+import {
+  initialLanguage,
+  isLanguage,
+  saveLanguage,
+  translate,
+  translateDocument,
+} from '../i18n/index.js';
+import { errorMessage } from '../i18n/messages.js';
 import './style.css';
 import { MAX_INPUT_BYTES } from '../core/glb.js';
 import { version } from '../../package.json';
 const $ = (id) => document.getElementById(id);
 $('version').textContent = version;
+let storage;
+try {
+  storage = window.localStorage;
+} catch {
+  /* Persistence may be blocked. */
+}
+let language = initialLanguage(navigator.languages ?? [navigator.language], storage);
+const displayedMessages = new Map([
+  ['status', { code: 'privacy' }],
+  ['preview-status', { code: 'preview.loading' }],
+]);
+function text(message) {
+  if (message.code === 'preview.failed') {
+    return translate(language, message.code, { reason: translate(language, message.reason) });
+  }
+  return translate(language, message);
+}
+function display(id, code, params = {}) {
+  const message = typeof code === 'string' ? { code, params } : code;
+  displayedMessages.set(id, message);
+  $(id).textContent = text(message);
+}
+function renderLanguage() {
+  translateDocument(language);
+  $('language').value = language;
+  for (const [id, message] of displayedMessages) $(id).textContent = text(message);
+  $('warnings').textContent = warnings.map(text).join('\n');
+}
+let warnings = [];
+renderLanguage();
+$('language').addEventListener('change', (event) => {
+  if (!isLanguage(event.target.value)) return;
+  language = event.target.value;
+  saveLanguage(language, storage);
+  renderLanguage();
+});
 function showScreen(name) {
   for (const id of ['waiting', 'result']) $(id).hidden = id !== name;
   for (const stage of document.querySelectorAll('[data-stage]')) {
@@ -52,14 +93,13 @@ async function start(file) {
   $('status').className = '';
   $('file').value = '';
   if (!file) return;
-  if (!file.name.toLowerCase().endsWith('.vrm'))
-    return error('拡張子が.vrmのファイルを選択してください。');
-  if (file.size > MAX_INPUT_BYTES) return error('100 MiB以下のファイルを選択してください。');
+  if (!file.name.toLowerCase().endsWith('.vrm')) return error('error.extension');
+  if (file.size > MAX_INPUT_BYTES) return error('error.inputSize');
   $('filename').textContent = file.name;
   $('progress-area').hidden = false;
   $('drop').hidden = true;
   $('progress').value = 0;
-  $('status').textContent = 'ファイルを読み込んでいます…';
+  display('status', 'progress.reading');
   try {
     const buffer = await file.arrayBuffer();
     if (ticket !== sequence) return;
@@ -71,11 +111,11 @@ async function start(file) {
       const data = event.data;
       if (data.type === 'progress') {
         $('progress').value = data.value;
-        $('status').textContent = messageText(data.message);
+        display('status', data.message);
       }
       if (data.type === 'error') {
         stopWorker();
-        error(messageText(data.message));
+        error(data.message);
       }
       if (data.type === 'done') {
         stopWorker();
@@ -83,14 +123,17 @@ async function start(file) {
         downloadUrl = URL.createObjectURL(new Blob([output], { type: 'application/octet-stream' }));
         $('download').href = downloadUrl;
         $('download').download = file.name.replace(/\.vrm$/i, '_perfectsync.vrm');
-        $('result-title').textContent = data.added
-          ? `${data.added}表情を追加しました`
-          : '変換済みのVRMです';
-        $('result-detail').textContent =
-          `VRM ${data.version} · ${(output.byteLength / 1024 / 1024).toFixed(1)} MiB · 元のファイルは保持されています`;
-        $('warnings').textContent = data.warnings.map(messageText).join('\n');
+        display('result-title', data.added ? 'result.added' : 'result.existing', {
+          count: data.added,
+        });
+        display('result-detail', 'result.detail', {
+          version: data.version,
+          size: (output.byteLength / 1024 / 1024).toFixed(1),
+        });
+        warnings = data.warnings;
+        $('warnings').textContent = warnings.map(text).join('\n');
         showScreen('result');
-        $('status').textContent = '表情を確認し、VRMを保存できます。';
+        display('status', 'result.ready');
         $('result').querySelector('details').open = false;
         openPreview();
       }
@@ -98,18 +141,18 @@ async function start(file) {
     worker.onerror = () => {
       if (ticket !== sequence) return;
       stopWorker();
-      error('処理を継続できませんでした。ファイルを選び直してください。');
+      error('error.unknown');
     };
     workerTimeout = setTimeout(() => {
       if (ticket !== sequence) return;
       stopWorker();
-      error('処理時間の上限を超えました。ファイルを選び直してください。');
+      error('error.timeout');
     }, 120000);
     worker.postMessage({ buffer }, [buffer]);
   } catch (e) {
     if (ticket === sequence) {
       stopWorker();
-      error(e.message);
+      error(errorMessage(e));
     }
   }
 }
@@ -117,7 +160,7 @@ function error(message) {
   showScreen('waiting');
   $('drop').hidden = false;
   $('status').className = 'error';
-  $('status').textContent = message;
+  display('status', message);
 }
 $('file').addEventListener('change', (event) => start(event.target.files[0]));
 for (const name of ['dragenter', 'dragover'])
@@ -132,7 +175,7 @@ for (const name of ['dragleave', 'drop'])
   });
 $('drop').addEventListener('drop', (event) => {
   if (event.dataTransfer.files.length !== 1) {
-    error('1ファイルずつドロップしてください。');
+    error('error.dropCount');
     return;
   }
   start(event.dataTransfer.files[0]);
@@ -143,14 +186,14 @@ $('cancel').addEventListener('click', () => {
   sequence++;
   stopWorker();
   $('drop').hidden = false;
-  $('status').textContent = '変換をキャンセルしました。ファイルを選び直せます。';
+  display('status', 'status.cancelled');
 });
 async function openPreview() {
   if (!output || previewLoading || previewCleanup) return;
   previewLoading = true;
   const ticket = sequence;
   $('preview-retry').hidden = true;
-  $('preview-status').textContent = 'プレビューを準備しています…';
+  display('preview-status', 'preview.loading');
   try {
     const { createPreview } = await import('../preview/viewer.js');
     if (ticket !== sequence) return;
@@ -167,11 +210,13 @@ async function openPreview() {
     }
     previewCleanup = cleanup;
     $('reset').disabled = false;
-    $('preview-status').textContent = 'スライダーで表情を調整。ドラッグで回転、ホイールで拡大。';
+    display('preview-status', 'preview.instructions');
   } catch (e) {
     if (ticket === sequence) {
-      $('preview-status').textContent =
-        `プレビューを開けませんでした：${e.message}。VRMの保存は可能です。`;
+      display('preview-status', {
+        code: 'preview.failed',
+        reason: errorMessage(e, 'error.previewUnknown'),
+      });
       $('preview-retry').hidden = false;
     }
   } finally {
@@ -182,6 +227,6 @@ $('preview-retry').addEventListener('click', openPreview);
 
 $('new-file').addEventListener('click', () => {
   start();
-  $('status').textContent = 'ファイルは外部へ送信されません。';
+  display('status', 'privacy');
   $('file').focus({ preventScroll: true });
 });

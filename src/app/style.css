@@ -742,3 +742,104 @@ footer a {
     font-size: 12px;
   }
 }
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+#language {
+  font: inherit;
+  font-size: 12px;
+  color: #357e69;
+  background: #fff;
+  border: 1px solid #d6e2d8;
+  border-radius: 8px;
+  padding: 5px 8px;
+  max-width: 110px;
+}
+#language:focus-visible {
+  outline: 2px solid #90b9a4;
+  outline-offset: 2px;
+}
+h1 .intro-first {
+  color: inherit;
+}
+.intro,
+.workspace,
+.preview-heading > div,
+.expression-heading h2 {
+  min-width: 0;
+}
+.primary,
+.secondary {
+  text-align: center;
+}
+@media (max-width: 640px) {
+  header {
+    gap: 8px;
+  }
+  .header-controls {
+    gap: 5px;
+  }
+  .version {
+    font-size: 9px;
+    padding: 3px 6px;
+  }
+  #language {
+    font-size: 11px;
+    padding: 5px 4px;
+    max-width: 85px;
+  }
+}
+@media (max-width: 360px) {
+  .brand span {
+    font-size: 10px;
+  }
+  .brand {
+    font-size: 20px;
+    gap: 5px;
+  }
+  header {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+  .intro h1 {
+    font-size: 25px;
+  }
+}
+
+/* Keep the slider list in its own flexible row when the retry button is hidden. */
+.sliders {
+  grid-row: 4;
+}
+@media (max-height: 700px) {
+  #warnings {
+    max-height: 2em;
+    margin-top: 4px;
+  }
+}
+@media (max-height: 520px) {
+  header {
+    padding-top: 5px;
+    padding-bottom: 5px;
+  }
+  .stages {
+    padding-bottom: 4px;
+  }
+  #warnings {
+    max-height: 1.8em;
+  }
+  .expression-panel {
+    gap: 3px;
+  }
+  .expression-heading .secondary {
+    padding-top: 3px;
+    padding-bottom: 3px;
+  }
+}
+@media (max-width: 640px) and (min-height: 521px) and (max-height: 700px) {
+  .preview-layout {
+    grid-template-rows: minmax(0, 0.75fr) minmax(0, 1.25fr);
+  }
+}

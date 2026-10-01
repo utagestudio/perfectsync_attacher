@@ -4,6 +4,7 @@ export default defineConfig({
   workers: 1,
   timeout: 60000,
   use: {
+    locale: 'ja-JP',
     baseURL: 'http://127.0.0.1:5193',
     viewport: { width: 1280, height: 1000 },
     launchOptions: {
