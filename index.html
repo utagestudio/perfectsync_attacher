@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="description"
+      content="VRoidのVRMにPerfect Sync用の52表情を追加。ファイルを端末内で変換します。"
+    />
+    <title>Perfect Sync Attacher</title>
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="/"
+        >◈ <span>Perfect Sync <b>Attacher</b></span></a
+      ><span class="version" id="version"></span>
+    </header>
+    <main>
+      <section class="intro">
+        <p class="eyebrow">VROID → PERFECT SYNC</p>
+        <h1>あなたのアバターに、<br /><span>もっと豊かな表情を。</span></h1>
+        <p class="lead">
+          VRMをドロップして、52種類の表情を追加。<br />Unityを開かず、ブラウザーだけで。
+        </p>
+        <div class="chips">
+          <span>VRM 0.x / 1.0</span><span>端末内で処理</span><span>元ファイルを保持</span>
+        </div>
+      </section>
+      <section class="workspace" aria-label="VRM変換">
+        <div id="drop" class="drop">
+          <div class="file-icon" aria-hidden="true">↓</div>
+          <h2>VRMファイルをここにドロップ</h2>
+          <p>または、お使いの端末から選択してください</p>
+          <label class="primary file-label"
+            >ファイルを選択<input
+              id="file"
+              type="file"
+              accept=".vrm"
+              aria-label="VRMファイルを選択"
+          /></label>
+          <p class="small">1ファイルずつ・100 MiBまで</p>
+        </div>
+        <div class="progress-area" id="progress-area" hidden>
+          <div class="progress-heading">
+            <strong id="filename"></strong
+            ><button id="cancel" class="text-button">キャンセル</button>
+          </div>
+          <progress id="progress" max="100" value="0"></progress>
+        </div>
+        <p id="status" role="status" aria-live="polite">ファイルは外部へ送信されません。</p>
+        <div id="result" hidden>
+          <div class="result-top">
+            <div>
+              <p class="eyebrow">READY TO DOWNLOAD</p>
+              <h2 id="result-title">52表情を追加しました</h2>
+              <p id="result-detail"></p>
+            </div>
+            <span class="check" aria-hidden="true">✓</span>
+          </div>
+          <a id="download" class="primary" download>変換したVRMを保存</a
+          ><button id="preview-button" class="secondary">表情をプレビュー</button>
+          <p id="warnings" class="small"></p>
+        </div>
+      </section>
+      <section id="preview" class="preview" hidden>
+        <div class="preview-heading">
+          <div>
+            <p class="eyebrow">EXPRESSION CHECK</p>
+            <h2>表情を確認</h2>
+          </div>
+          <button id="reset" class="secondary">すべてリセット</button>
+        </div>
+        <p id="preview-status" role="status">プレビューを準備しています…</p>
+        <div class="preview-layout">
+          <div id="viewer" aria-label="変換後の3Dモデル"></div>
+          <div id="sliders" class="sliders"></div>
+        </div>
+      </section>
+      <section class="notes">
+        <article>
+          <span class="step">01</span>
+          <h3>ドロップ</h3>
+          <p>VRoid Studioから書き出した<br />VRMを選択します。</p>
+        </article>
+        <article>
+          <span class="step">02</span>
+          <h3>表情を追加</h3>
+          <p>対応する顔メッシュを確認して、<br />52表情の変形データを追加します。</p>
+        </article>
+        <article>
+          <span class="step">03</span>
+          <h3>保存して確認</h3>
+          <p>プレビューで表情を確認し、<br />お使いのアプリで試してください。</p>
+        </article>
+      </section>
+      <aside class="notice">
+        <strong>開発中のプロトタイプです</strong>
+        <p>
+          対応する顔のUV・メッシュ構造を持つモデルが対象です。身体と顔が結合されたモデルなどは未対応です。WebcamMotionCapture／VSeeFaceでの動作確認はこれから行います。
+        </p>
+      </aside>
+    </main>
+    <footer>
+      <span>Perfect Sync Attacher</span
+      ><span
+        >表情データ：<a
+          href="https://github.com/hinzka/52blendshapes-for-VRoid-face"
+          target="_blank"
+          rel="noopener noreferrer"
+          >hinzka</a
+        ></span
+      >
+    </footer>
+    <script type="module" src="/src/app/main.js"></script>
+  </body>
+</html>
