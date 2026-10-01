@@ -963,3 +963,15 @@ h1 .intro-first {
 .extended-note-title {
   font-family: 'Dela Gothic One', sans-serif;
 }
+
+/* Collapse the unused retry row and join the two preview explanations. */
+.expression-panel:has(> #preview-retry[hidden]) {
+  grid-template-rows: auto auto minmax(0, 1fr);
+  row-gap: 0;
+}
+.expression-panel:has(> #preview-retry[hidden]) > .expression-heading {
+  margin-bottom: 8px;
+}
+.expression-panel:has(> #preview-retry[hidden]) > .sliders {
+  grid-row: 3;
+}
