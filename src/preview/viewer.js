@@ -97,18 +97,18 @@ export async function createPreview(buffer, container, sliders, reset, isCurrent
     input.step = 0.01;
     input.value = 0;
     input.setAttribute('aria-label', name);
-    const toggleLabel = document.createElement('label');
-    toggleLabel.className = 'extended-toggle';
-    const toggle = document.createElement('input');
-    toggle.type = 'checkbox';
+    const toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'extended-toggle';
+    toggle.setAttribute('aria-pressed', 'false');
     toggle.setAttribute('aria-labelledby', `expression-${name} extended-${name}`);
     const toggleText = document.createElement('span');
     toggleText.id = `extended-${name}`;
     toggleText.dataset.i18n = 'preview.extended';
     toggleText.textContent = translate(document.documentElement.lang, 'preview.extended');
-    toggleLabel.dataset.i18nTitle = 'preview.extendedHint';
-    toggleLabel.title = translate(document.documentElement.lang, 'preview.extendedHint');
-    toggleLabel.append(toggle, toggleText);
+    toggle.dataset.i18nTitle = 'preview.extendedHint';
+    toggle.title = translate(document.documentElement.lang, 'preview.extendedHint');
+    toggle.append(toggleText);
     const update = () => {
       vrm.expressionManager.setValue(name, Number(input.value));
       value.textContent = `${Math.round(input.value * 100)}%`;
@@ -118,20 +118,22 @@ export async function createPreview(buffer, container, sliders, reset, isCurrent
       );
     };
     input.addEventListener('input', update);
-    toggle.addEventListener('change', () => {
+    toggle.addEventListener('click', () => {
+      const enabled = toggle.getAttribute('aria-pressed') !== 'true';
+      toggle.setAttribute('aria-pressed', String(enabled));
       const current = Number(input.value);
-      input.min = toggle.checked ? -1 : 0;
-      input.max = toggle.checked ? 2 : 1;
+      input.min = enabled ? -1 : 0;
+      input.max = enabled ? 2 : 1;
       input.value = Math.max(Number(input.min), Math.min(Number(input.max), current));
       update();
     });
-    row.append(caption, value, input, toggleLabel);
+    row.append(caption, value, input, toggle);
     sliders.append(row);
     inputs.push({ input, value, name, row, toggle });
   }
   const resetValues = () => {
     for (const { input, value, name, toggle } of inputs) {
-      toggle.checked = false;
+      toggle.setAttribute('aria-pressed', 'false');
       input.min = 0;
       input.max = 1;
       input.value = 0;

@@ -375,14 +375,14 @@ footer a {
 }
 .slider-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 48px;
+  grid-template-columns: minmax(0, 1fr) 48px auto;
   gap: 0 10px;
   font-size: 12px;
   padding: 8px 0;
   border-bottom: 1px solid #edf1e9;
 }
 .slider-row input[type='range'] {
-  grid-column: 1/-1;
+  grid-column: 1/3;
   width: 100%;
   height: 32px;
   margin: 0;
@@ -912,18 +912,38 @@ h1 .intro-first {
   }
 }
 
+/* A compact toggle beside both the name/value and the slider. */
+.slider-row > output {
+  grid-column: 2;
+}
 .extended-toggle {
-  grid-column: 1/-1;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 24px;
+  grid-column: 3;
+  grid-row: 1/3;
+  align-self: center;
+  width: 38px;
+  min-height: 38px;
+  padding: 5px;
+  border: 1px solid #d5e4dc;
+  border-radius: 7px;
+  background: #edf1e9;
   color: #586b5f;
+  font: inherit;
+  font-size: 10px;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
   cursor: pointer;
 }
-.extended-toggle input {
-  margin: 0;
-  accent-color: #3e8c78;
+.extended-toggle[aria-pressed='true'] {
+  background: #3e8c78;
+  border-color: #3e8c78;
+  color: #fff;
+}
+.extended-toggle:hover {
+  border-color: #3e8c78;
+}
+.extended-toggle:focus-visible {
+  outline: 2px solid #90b9a4;
+  outline-offset: 2px;
 }
 .extended-note {
   margin: 0 0 8px;
