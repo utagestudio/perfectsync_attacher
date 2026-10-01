@@ -1,6 +1,6 @@
 {
   "name": "perfectsync-attacher",
-  "version": "0.1.0-dev.3",
+  "version": "0.1.0-dev.4",
   "private": true,
   "type": "module",
   "scripts": {
@@ -12,6 +12,7 @@
   "devDependencies": {
     "@playwright/test": "^1.63.0",
     "gltf-validator": "^2.0.0-dev.3.10",
+    "prettier": "^3.9.9",
     "vite": "^8.3.1"
   },
   "dependencies": {

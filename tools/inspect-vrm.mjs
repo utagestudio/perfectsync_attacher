@@ -12,10 +12,8 @@ export function readGlbJson(bytes) {
     if (offset + 8 > bytes.length) throw new Error('Truncated chunk header');
     const length = bytes.readUInt32LE(offset);
     const type = bytes.readUInt32LE(offset + 4);
-    if (length % 4 || offset + 8 + length > bytes.length)
-      throw new Error('Invalid chunk length');
-    if (offset === 12 && type !== 0x4e4f534a)
-      throw new Error('First chunk must be JSON');
+    if (length % 4 || offset + 8 + length > bytes.length) throw new Error('Invalid chunk length');
+    if (offset === 12 && type !== 0x4e4f534a) throw new Error('First chunk must be JSON');
     if (type === 0x4e4f534a) {
       if (json) throw new Error('Duplicate JSON chunk');
       json = JSON.parse(bytes.toString('utf8', offset + 8, offset + 8 + length));
@@ -47,15 +45,17 @@ export function summarize(json) {
   return {
     version: vrm0 ? `0.x (${vrm0.specVersion ?? 'unspecified'})` : vrm1.specVersion,
     generator: json.asset?.generator,
-    expressionCount: vrm0 ? groups.length
+    expressionCount: vrm0
+      ? groups.length
       : Object.keys(expressions.preset ?? {}).length + Object.keys(expressions.custom ?? {}).length,
-    expressionMeshes: [...faceMeshes].map(index => {
+    expressionMeshes: [...faceMeshes].map((index) => {
       const mesh = json.meshes?.[index];
       if (!mesh) throw new Error('Expression references a missing mesh');
       return {
-        index, name: mesh.name,
+        index,
+        name: mesh.name,
         targetNames: mesh.extras?.targetNames ?? [],
-        primitives: mesh.primitives.map(p => ({
+        primitives: mesh.primitives.map((p) => ({
           vertices: json.accessors?.[p.attributes.POSITION]?.count,
           indices: p.indices === undefined ? null : json.accessors?.[p.indices]?.count,
           targets: p.targets?.length ?? 0,
@@ -72,7 +72,9 @@ if (process.argv[1] && import.meta.url === new URL(process.argv[1], 'file:').hre
     if (!name.toLowerCase().endsWith('.vrm')) continue;
     try {
       const bytes = await readFile(join(directory, name));
-      console.log(JSON.stringify({ file: name, bytes: bytes.length, ...summarize(readGlbJson(bytes)) }));
+      console.log(
+        JSON.stringify({ file: name, bytes: bytes.length, ...summarize(readGlbJson(bytes)) }),
+      );
     } catch (error) {
       console.error(`${name}: ${error.message}`);
       failed = true;
