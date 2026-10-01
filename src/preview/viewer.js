@@ -1,3 +1,4 @@
+import { AppError } from '../i18n/messages.js';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -5,14 +6,14 @@ import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
 export async function createPreview(buffer, container, sliders, reset, isCurrent = () => true) {
   const manager = new THREE.LoadingManager();
   manager.setURLModifier((url) => {
-    if (!url.startsWith('blob:')) throw new Error('プレビューの外部参照は許可されていません');
+    if (!url.startsWith('blob:')) throw new AppError('error.previewExternal');
     return url;
   });
   const loader = new GLTFLoader(manager);
   loader.register((parser) => new VRMLoaderPlugin(parser));
   const gltf = await loader.parseAsync(buffer, '');
   const vrm = gltf.userData.vrm;
-  if (!vrm) throw new Error('VRMを読み込めませんでした');
+  if (!vrm) throw new AppError('error.previewVrm');
   if (!isCurrent()) {
     VRMUtils.deepDispose(vrm.scene);
     return () => {};
@@ -71,7 +72,7 @@ export async function createPreview(buffer, container, sliders, reset, isCurrent
     renderer.dispose();
     VRMUtils.deepDispose(vrm.scene);
     observer.disconnect();
-    throw new Error(`表情の読み込み数が${names.length}/52です`);
+    throw new AppError('error.previewCount', { count: names.length });
   }
   const inputs = [];
   for (const name of names) {

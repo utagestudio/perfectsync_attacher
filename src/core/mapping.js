@@ -1,3 +1,4 @@
+import { AppError } from '../i18n/messages.js';
 import { readAccessor } from './glb.js';
 export const uvKey = (uv, i) =>
   `${Math.round(uv[i * 2] * 100000)},${Math.round(uv[i * 2 + 1] * 100000)}`;
@@ -9,12 +10,12 @@ export function materialRole(name = '') {
     ?.slice(0, -1);
 }
 export function primitiveGeometry(glb, p) {
-  if (p.mode !== undefined && p.mode !== 4) throw new Error('三角形以外の顔メッシュは未対応です。');
+  if (p.mode !== undefined && p.mode !== 4) throw new AppError('error.trianglesOnly');
   if (
     glb.json.accessors?.[p.attributes?.POSITION]?.count > 50000 ||
     glb.json.accessors?.[p.indices]?.count > 300000
   )
-    throw new Error('顔メッシュが処理上限を超えています。');
+    throw new AppError('error.faceGeometrySize');
   const positionAccessor = glb.json.accessors?.[p.attributes?.POSITION];
   const uvAccessor = glb.json.accessors?.[p.attributes?.TEXCOORD_0];
   const indexAccessor = glb.json.accessors?.[p.indices];
@@ -27,21 +28,21 @@ export function primitiveGeometry(glb, p) {
         indexAccessor.normalized ||
         ![5121, 5123, 5125].includes(indexAccessor.componentType)))
   )
-    throw new Error('顔メッシュのaccessor形式が不正です。');
+    throw new AppError('error.faceAccessor');
   const position = readAccessor(glb, p.attributes.POSITION),
     uv = readAccessor(glb, p.attributes.TEXCOORD_0);
-  if (position.length / 3 !== uv.length / 2) throw new Error('UVと頂点数が一致しません。');
+  if (position.length / 3 !== uv.length / 2) throw new AppError('error.uvCount');
   const indices =
     p.indices === undefined
       ? Float64Array.from({ length: position.length / 3 }, (_, i) => i)
       : readAccessor(glb, p.indices);
-  if (indices.length % 3) throw new Error('三角形indicesが不正です。');
+  if (indices.length % 3) throw new AppError('error.triangleIndices');
   const neighbors = new Map();
   for (let i = 0; i < indices.length; i += 3)
     for (let a = 0; a < 3; a++) {
       const v = indices[i + a];
       if (!Number.isInteger(v) || v < 0 || v >= position.length / 3)
-        throw new Error('頂点indexが範囲外です。');
+        throw new AppError('error.vertexIndex');
       const set = neighbors.get(v) ?? new Set();
       set.add(indices[i + ((a + 1) % 3)]);
       set.add(indices[i + ((a + 2) % 3)]);
@@ -73,7 +74,7 @@ export function mapGeometry(source, target) {
     if (candidates.length > 1)
       candidates = candidates.filter((j) => source.signatures.get(j) === target.signatures.get(i));
     if (candidates.length !== 1)
-      throw new Error(`UVの頂点対応が確定できません（頂点${i}、候補${candidates.length}）。`);
+      throw new AppError('error.uvAmbiguous', { count: candidates.length, vertex: i });
     mapping.set(i, candidates[0]);
   }
   return mapping;
@@ -96,11 +97,11 @@ export function fitAxes(source, target, mapping) {
       n++;
     }
     const den = n * sxx - sx * sx;
-    if (Math.abs(den) < 1e-12) throw new Error('顔の座標補正を推定できません。');
+    if (Math.abs(den) < 1e-12) throw new AppError('error.axesUnestimable');
     const scale = (n * sxy - sx * sy) / den,
       offset = (sy - scale * sx) / n;
     if (!Number.isFinite(scale) || Math.abs(scale) < 0.1 || Math.abs(scale) > 5)
-      throw new Error('顔の座標補正が対応範囲外です。');
+      throw new AppError('error.axesLimit');
     transforms.push({ scale, offset });
   }
   return transforms;
@@ -132,10 +133,10 @@ export function mapWithTransform(source, target, transforms) {
           ),
         }))
         .sort((a, b) => a.d - b.d);
-      if (ranked[1].d - ranked[0].d < 1e-8) throw new Error('重複UVの左右対応が曖昧です。');
+      if (ranked[1].d - ranked[0].d < 1e-8) throw new AppError('error.duplicateUv');
       choices = [ranked[0].j];
     }
-    if (choices.length !== 1) throw new Error(`UVの頂点対応が確定できません（頂点${i}）。`);
+    if (choices.length !== 1) throw new AppError('error.uvMissing', { vertex: i });
     result.set(i, choices[0]);
   }
   return result;

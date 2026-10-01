@@ -1,11 +1,11 @@
 {
   "name": "perfectsync-attacher",
-  "version": "0.2.0-dev.11",
+  "version": "0.2.0-dev.12",
   "private": true,
   "type": "module",
   "scripts": {
     "inspect:vrm": "node tools/inspect-vrm.mjs",
-    "test": "node --test tests/core.test.mjs",
+    "test": "node --test tests/*.test.mjs",
     "convert:local": "node tools/convert-local.mjs",
     "validate:local": "node tools/validate-local.mjs",
     "dev": "vite",

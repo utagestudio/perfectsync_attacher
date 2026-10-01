@@ -1,3 +1,6 @@
+import ja from '../i18n/locales/ja.js';
+import { formatMessage } from '../i18n/messages.js';
+const messageText = (message) => formatMessage(ja, message.code, message.params);
 import './style.css';
 import { MAX_INPUT_BYTES } from '../core/glb.js';
 import { version } from '../../package.json';
@@ -68,11 +71,11 @@ async function start(file) {
       const data = event.data;
       if (data.type === 'progress') {
         $('progress').value = data.value;
-        $('status').textContent = data.message;
+        $('status').textContent = messageText(data.message);
       }
       if (data.type === 'error') {
         stopWorker();
-        error(data.message);
+        error(messageText(data.message));
       }
       if (data.type === 'done') {
         stopWorker();
@@ -85,7 +88,7 @@ async function start(file) {
           : '変換済みのVRMです';
         $('result-detail').textContent =
           `VRM ${data.version} · ${(output.byteLength / 1024 / 1024).toFixed(1)} MiB · 元のファイルは保持されています`;
-        $('warnings').textContent = data.warnings.join('\n');
+        $('warnings').textContent = data.warnings.map(messageText).join('\n');
         showScreen('result');
         $('status').textContent = '表情を確認し、VRMを保存できます。';
         $('result').querySelector('details').open = false;
