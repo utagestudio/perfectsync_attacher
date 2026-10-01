@@ -1,3 +1,10 @@
+@font-face {
+  font-family: 'Dela Gothic One';
+  src: url('/fonts/dela-gothic-one-toggle.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 :root {
   font-family:
     system-ui,
@@ -928,6 +935,7 @@ h1 .intro-first {
   background: #edf1e9;
   color: #586b5f;
   font: inherit;
+  font-family: 'Dela Gothic One', sans-serif;
   font-size: 10px;
   line-height: 1.15;
   overflow-wrap: anywhere;
