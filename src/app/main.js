@@ -1,3 +1,4 @@
+import { contactFormUrl } from '../../config/contact.js';
 import { initializeIntroductionVideo } from './introduction-video.js';
 import { initializeConsent } from '../analytics/ui.js';
 import {
@@ -41,6 +42,7 @@ function display(id, code, params = {}) {
 }
 function renderLanguage() {
   translateDocument(language);
+  $('contact-link').href = contactFormUrl(language, version);
   document.title = translate(language, 'seo.title');
   const meta = (property, value) =>
     document.querySelector(`meta[property="${property}"]`)?.setAttribute('content', value);

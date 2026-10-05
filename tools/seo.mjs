@@ -1,4 +1,7 @@
+import { readFileSync } from 'node:fs';
+import { contactFormUrl } from '../config/contact.js';
 import { catalogs, translate } from '../src/i18n/index.js';
+const { version } = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 
 export const languages = Object.keys(catalogs);
 export const languagePath = (language) => `/${language}/`;
@@ -32,6 +35,9 @@ export function siteOrigin(value) {
 }
 
 export function localizedHtml(html, language) {
+  html = html.replace(/<a\b[^>]*\bid="contact-link"[^>]*>/g, (tag) =>
+    tag.replace(/\bhref="[^"]*"/, `href="${escapeHtml(contactFormUrl(language, version))}"`),
+  );
   html = html.replace(/<html\b[^>]*>/, `<html lang="${language}">`);
   html = html.replace(
     /(<([a-z][\w-]*)\b[^>]*\bdata-i18n="([^"]+)"[^>]*>)[^<]*(<\/\2\s*>)/gi,

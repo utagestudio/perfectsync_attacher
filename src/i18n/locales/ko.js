@@ -125,6 +125,8 @@ export default {
   privacy: '파일은 외부로 전송되지 않습니다.',
   'footer.x': 'UTAGE.STUDIO의 X',
   'footer.links': '관련 링크',
+  'footer.contact': '문의',
+  'footer.contactHint': '영어 문의 양식입니다. VRM 파일이나 기밀 정보를 첨부하지 마세요.',
   'footer.issues': '버그 신고에 VRM 파일이나 기밀 정보를 첨부하지 마세요.',
   'footer.licenses': '라이선스',
   'footer.template': '표정 데이터: ',

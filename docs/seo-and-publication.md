@@ -55,3 +55,7 @@ Cloudflareが`CF_PAGES_BRANCH`を設定し、その値が`master`以外なら、
 - [Google：言語別ページとhreflang](https://developers.google.com/search/docs/specialty/international/localized-versions)
 - [Cloudflare Pages：静的ページ・URL・404配信](https://developers.cloudflare.com/pages/configuration/serving-pages/)
 - [Vite：HTML変換とプラグインAPI](https://vite.dev/guide/api-plugin.html)
+
+## お問い合わせフォーム
+
+ルートと5言語の初期HTMLに、言語に対応するフォームのリンクを生成する。`config/contact.js`をブラウザーとHTML生成で共有し、productは`PerfectSync Attacher`、versionはpackage.jsonから取得する。HTML属性内の`&`は`&amp;`へエスケープする。日英READMEのリンクはproductのみを渡す。

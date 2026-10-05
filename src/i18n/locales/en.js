@@ -126,6 +126,8 @@ export default {
   privacy: 'Your files are never uploaded.',
   'footer.x': 'UTAGE.STUDIO on X',
   'footer.links': 'Related links',
+  'footer.contact': 'Contact',
+  'footer.contactHint': 'Do not attach VRM files or confidential information to inquiries.',
   'footer.issues': 'Do not attach VRM files or confidential information to bug reports.',
   'footer.licenses': 'Licenses',
   'footer.template': 'Expression data: ',
