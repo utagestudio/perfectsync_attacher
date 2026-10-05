@@ -119,6 +119,8 @@ export default {
   privacy: '文件不会上传到外部。',
   'footer.x': 'UTAGE.STUDIO 的 X',
   'footer.links': '相关链接',
+  'footer.contact': '联系我们',
+  'footer.contactHint': '这是英文联系表单。请勿附加 VRM 文件或机密信息。',
   'footer.issues': '报告问题时，请勿附加 VRM 文件或机密信息。',
   'footer.licenses': '许可协议',
   'footer.template': '表情数据：',

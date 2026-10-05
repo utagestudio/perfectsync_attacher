@@ -54,9 +54,11 @@ npm run preview        # ビルド済みアプリの確認
 
 Cloudflare Pagesはビルドコマンド`npm run build`、出力先`dist`で配置できます。変換APIやモデル保存用ストレージは不要です。アクセス解析を有効にする場合は、Cloudflareのビルド環境変数`GTM_ID`とGTM／GA4を[同意管理の手順](docs/analytics-and-consent.md)に従って設定してください。公開URL・多言語ページ・検索向け設定は[公開設定](docs/seo-and-publication.md)を参照してください。プロジェクトの設計・開発ルールは[docs/README.md](docs/README.md)にあります。
 
-## 不具合報告
+## お問い合わせ
 
-[GitHub Issues](https://github.com/utagestudio/perfectsync_attacher/issues)へ、アプリ・ブラウザーのバージョン、VRMの形式、操作手順、表示されたエラーを記載してください。VRM本体、秘密情報、公開許可のない画像は添付しないでください。
+不具合の報告、要望、質問は[お問い合わせフォーム](https://tally.so/r/kdVdDR?product=PerfectSync%20Attacher)へ。[GitHub Issues](https://github.com/utagestudio/perfectsync_attacher/issues)も利用できます。
+
+不具合の報告には、アプリ・ブラウザーのバージョン、VRMの形式、操作手順、表示されたエラーを記載してください。VRM本体、秘密情報、公開許可のない画像は添付しないでください。
 
 ## ライセンス・謝辞
 

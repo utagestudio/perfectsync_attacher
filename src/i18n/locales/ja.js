@@ -122,6 +122,8 @@ export default {
   privacy: 'ファイルは外部へ送信されません。',
   'footer.x': 'UTAGE.STUDIOのX',
   'footer.links': '関連リンク',
+  'footer.contact': 'お問い合わせ',
+  'footer.contactHint': 'お問い合わせにはVRM本体や秘密情報を添付しないでください',
   'footer.issues': '不具合報告にはVRM本体や秘密情報を添付しないでください',
   'footer.licenses': 'ライセンス',
   'footer.template': '表情データ：',

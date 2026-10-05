@@ -54,9 +54,11 @@ Browser tests use a local Chrome installation and private test models. Models ar
 
 For Cloudflare Pages, use `npm run build` and the output directory `dist`. No conversion API or model storage is required. To enable analytics, set the Cloudflare build variable `GTM_ID` and configure GTM / GA4 following the [consent setup guide](docs/analytics-and-consent.md) (Japanese). See the [publication settings](docs/seo-and-publication.md) (Japanese) for the public URL, localized pages, and search metadata. See [docs/README.md](docs/README.md) (Japanese) for the design and development conventions.
 
-## Reporting issues
+## Contact
 
-Use [GitHub Issues](https://github.com/utagestudio/perfectsync_attacher/issues). Include the app and browser versions, VRM version, steps to reproduce, and displayed error. Do not attach VRM files, confidential information, or images you are not authorized to publish.
+For bug reports, requests, and questions, use the [contact form](https://tally.so/r/KYqY78?product=PerfectSync%20Attacher). [GitHub Issues](https://github.com/utagestudio/perfectsync_attacher/issues) are also available.
+
+For bug reports, include the app and browser versions, VRM version, steps to reproduce, and displayed error. Do not attach VRM files, confidential information, or images you are not authorized to publish.
 
 ## License and credits
 
