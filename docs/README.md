@@ -2,6 +2,7 @@
 
 作業開始時は以下を確認してください。
 
+- [Node.jsの運用](node-runtime.md)：Node.js 26系の指定、Cloudflare設定、更新時の検証。
 - [公開前チェック](publication-check.md)：コード・履歴・配布物の確認範囲と修正・検証結果。
 - [ライセンス方針](licenses.md)：本体のMITライセンス、第三者素材、入力・出力VRMの適用範囲。
 - [コンセプト・ユーザー要件](project-concept.md)：ユーザーの意図と指定事項。

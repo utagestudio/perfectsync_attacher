@@ -33,7 +33,7 @@ VRoid Studio製の対応VRMに、Perfect Sync用の52表情を追加するウェ
 
 ## 開発
 
-Node.js 22.12以上を使用します。
+Node.js 26.12.1を使用します。採用バージョンは`.node-version`で管理します。環境設定と更新手順は[Node.jsの運用](docs/node-runtime.md)を参照してください。
 
 ```sh
 npm ci

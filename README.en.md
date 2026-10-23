@@ -33,7 +33,7 @@ Conversion and preview run on your device. Input models are not uploaded. The ap
 
 ## Development
 
-Use Node.js 22.12 or later.
+Use Node.js 26.12.1, pinned in `.node-version`. See the [Node.js environment guide](docs/node-runtime.md) (Japanese) for setup and maintenance.
 
 ```sh
 npm ci

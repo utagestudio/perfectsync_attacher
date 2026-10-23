@@ -23,6 +23,8 @@
 
 ## ビルド・配信設定
 
+Node.jsは`.node-version`に指定した26.12.1を使用する。本番・プレビューの`NODE_VERSION`との整合確認と更新手順は[Node.jsの運用](node-runtime.md)を参照。
+
 Cloudflare Pagesのビルドコマンドは`npm run build`、出力先は`dist`、本番ブランチは`master`を想定する。カスタムドメインとして`perfectsync.utage.games`を設定する。ユーザーによる公開後、両ドメインのHTTP 200とCSP・Referrer-Policy・nosniffを確認した。今回のGTM対応コードはまだ配信していない。
 
 公開URLの既定値は`config/site.js`で管理する。別ドメインで公開する場合は、ファイルを変更するかビルド環境の`SITE_URL`で上書きする。HTTPSのoriginのみを受け付け、パス・認証情報・query・fragmentを含む値ではビルドを停止する。環境変数全体をブラウザーへ公開する仕組みは追加しない。
