@@ -37,3 +37,7 @@ Git管理外の`mise.toml`に`[tools]`の`node = "26.12.1"`を設定すると、
 - [Node.js 26.12.1](https://nodejs.org/en/blog/release/v26.12.1)
 - [2026年10月のセキュリティ修正](https://nodejs.org/en/blog/vulnerability/october-2026-security-releases)
 - [Cloudflare Pagesのビルド環境](https://developers.cloudflare.com/pages/configuration/build-image/)
+
+## 2026年10月のビルド依存更新
+
+依存監査でVite 8.3.1に既知の脆弱性（launch-editor経由のコマンド実行、開発サーバーのファイルアクセス制限回避など）が検出されたため、8.3.5へ更新した。関連するRolldown等の依存はlockfileに記録する。Node.js本体の修正とは別の更新であり、公開アプリの機能追加は含まない。
